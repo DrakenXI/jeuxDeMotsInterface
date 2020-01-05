@@ -2,21 +2,8 @@
 
 {% block title %}Navigateur Lexical pour JDM{% endblock %}
 
-{#{ block nav }{ include 'partials/header.html.twig' }{ endblock }#}
 
 {% block body %}
-<header class="top-bar">
-    <nav class="top-bar-left">
-        <div class="menu-text">
-            <a href="{{path('homepage') }}"><img class="logo" src="/assets/jdm_white_transparent.png" alt="Logo de Jeux de Mots"/>  Navigateur lexical pour Jeux de Mots</a>
-        </div>
-    </nav>
-    <nav class="top-bar-right">
-        <!-- connexion button -->
-    </nav>
-</header>
-<div class="corp">
-    <!-- Supposed to be in header -->
 
     <div data-magellan-target="main-content-section">
         <div class="text-center content">
@@ -27,7 +14,7 @@
                 <h2>Recherche</h2>
                 <div class="row">
                     <div class="column small-12 large-6">
-                        <input type="text" value="Je recherche...">
+                        <input type="text" placeholder="Je recherche..." value="">
                     </div>
                     <div class="column small-12 large-3">
                         <form class="product-option-selection">
@@ -53,31 +40,6 @@
                 <a href='{{ path('homepage') }}' class="button">Créer un compte</a>
             </gestionCompte>
         </div><!-- content -->
+    </div>
 
-
-
-    <!-- supposed to be in footer -->
-    </div> <!-- End of corp -->
-    <footer class="bot-bar">
-        <p><a href="https://github.com/DrakenXI/jeuxDeMotsInterface"><img src="/assets/GitHub-Light-32px.png" alt="Logo de GitHub"/></a> Projet réalisé dans le cadre de l'UE HMIN302.  &#169; C. Desgenetez et A. Paillard. En utilisant ce site, vous acceptez des cookies.</p>
-    </footer>
-
-    <script>
-        var button = document.getElementById('close-button')
-        button.addEventListener('click',hideshow,false);
-
-        function hideshow() {
-            document.getElementById('flashes').style.display = 'none';
-            console.log("hey");
-        }
-    </script>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
-    <script>
-        $(document).foundation();
-    </script>
-</body>
-</html>
 {% endblock %}
-
-{% block footer %}{% include 'partials/footer.html.twig' %}{% endblock %}
