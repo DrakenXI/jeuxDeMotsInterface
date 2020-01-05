@@ -5,10 +5,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Functions\JDMRequest;
+
 class SearchController extends AbstractController
 {
     function getHtmlContentFor(string $term){
-      $page = file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=".$term."&rel=");
+      $request = new JDMRequest();
+      $page = $request->getCodeFor($term);
       return $page;
     }
 
