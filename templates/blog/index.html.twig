@@ -1,14 +1,83 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello BlogController!{% endblock %}
+{% block title %}Navigateur Lexical pour JDM{% endblock %}
+
+{#{ block nav }{ include 'partials/header.html.twig' }{ endblock }#}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<header class="top-bar">
+    <nav class="top-bar-left">
+        <div class="menu-text">
+            <a href="{{path('homepage') }}"><img class="logo" src="/assets/jdm_white_transparent.png" alt="Logo de Jeux de Mots"/>  Navigateur lexical pour Jeux de Mots</a>
+        </div>
+    </nav>
+    <nav class="top-bar-right">
+        <!-- connexion button -->
+    </nav>
+</header>
+<div class="corp">
+    <!-- Supposed to be in header -->
 
-<div class="example-wrapper">
-    <h1>{{ title }}</h1>
-</div>
+    <div data-magellan-target="main-content-section">
+        <div class="text-center content">
+            <h1>{{ title }}</h1>
+            <p>Bienvenue sur le navigateur pour Jeux de Mots. Ici vous pouvez naviguer en toute simplicité dans le réseau lexical du <a href="http://www.jeuxdemots.org/jdm-about.php">projet Jeux de Mots</a>.</p>
+
+            <recherche>
+                <h2>Recherche</h2>
+                <div class="row">
+                    <div class="column small-12 large-6">
+                        <input type="text" value="Je recherche...">
+                    </div>
+                    <div class="column small-12 large-3">
+                        <form class="product-option-selection">
+                            <select>
+                              <option value="exacte">Exactement</option>
+                              <option value="approximative">Approximativement</option>
+                              <option value="relation">Par relations</option>
+                              <option value="chaine">Par forme de chaîne</option>
+                            </select>
+                          </label>
+                        </form>
+                    </div>
+                    {# si relations coche, faire pop un truc pour selectionner la relation#}
+                    <div class="column small-12 large-3">
+                        <button class='button' >Rechercher</button>
+                    </div>
+                </div>
+            </recherche>
+            <gestionCompte>
+                <h2>Un compte ?</h2>
+                <p>Pour faciliter votre visite ce site utilise des cookies. Connectez-vous (ou inscrivez-vous) pour une meilleure expérience.</p>
+                <a href='{{ path('homepage') }}' class="button">Connexion</a>
+                <a href='{{ path('homepage') }}' class="button">Créer un compte</a>
+            </gestionCompte>
+        </div><!-- content -->
+
+
+
+    <!-- supposed to be in footer -->
+    </div> <!-- End of corp -->
+    <footer class="bot-bar">
+        <p><a href="https://github.com/DrakenXI/jeuxDeMotsInterface"><img src="/assets/GitHub-Light-32px.png" alt="Logo de GitHub"/></a> Projet réalisé dans le cadre de l'UE HMIN302.  &#169; C. Desgenetez et A. Paillard. En utilisant ce site, vous acceptez des cookies.</p>
+    </footer>
+
+    <script>
+        var button = document.getElementById('close-button')
+        button.addEventListener('click',hideshow,false);
+
+        function hideshow() {
+            document.getElementById('flashes').style.display = 'none';
+            console.log("hey");
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
+    <script>
+        $(document).foundation();
+    </script>
+</body>
+</html>
 {% endblock %}
+
+{% block footer %}{% include 'partials/footer.html.twig' %}{% endblock %}
