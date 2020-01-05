@@ -10,30 +10,30 @@
             <h1>{{ title }}</h1>
             <p>Bienvenue sur le navigateur pour Jeux de Mots. Ici vous pouvez naviguer en toute simplicité dans le réseau lexical du <a href="http://www.jeuxdemots.org/jdm-about.php">projet Jeux de Mots</a>.</p>
 
-            <recherche>
+            <recherche class="panel">
                 <h2>Recherche</h2>
                 <div class="row">
-                    <div class="column small-12 large-6">
-                        <input type="text" placeholder="Je recherche..." value="">
-                    </div>
-                    <div class="column small-12 large-3">
-                        <form class="product-option-selection">
-                            <select>
-                              <option value="exacte">Exactement</option>
-                              <option value="approximative">Approximativement</option>
-                              <option value="relation">Par relations</option>
-                              <option value="chaine">Par forme de chaîne</option>
-                            </select>
-                          </label>
-                        </form>
-                    </div>
-                    {# si relations coche, faire pop un truc pour selectionner la relation#}
-                    <div class="column small-12 large-3">
-                        <button class='button' >Rechercher</button>
-                    </div>
-                </div>
+                    <form id="form" action="">
+                        <input id="term" class="column large-3" type="text" value="Je recherche le terme...">
+                        <select id="search-mode" class="column large-3" onchange="setExplanationText()">
+                            <option value="" disabled>--Choisir un mode de recherche--</option>
+                            <option value="exacte">Exactement</option>
+                            <option value="approximative">Approximativement</option>
+                            <option value="relation">Par relations</option>
+                            <option value="chaine">Par forme de chaîne</option>
+                        </select>
+                        <select id="relations" class="column large-3" multiple>
+                            <option value="" disabled>--Choisir une relation--</option>
+                            {% for relation in relations %}
+                                <option value="{{ relation }}">{{ relation }}</option>
+                            {% endfor %}
+                        </select>
+                        <input class="button column large-3" onclick="setAction()" type="submit" value="Submit">
+                    </form>
+                    <p id="mode-explanation" class="column large-3">Choisissez le mode de recherche.</p>
+                </div><!-- row -->
             </recherche>
-            <gestionCompte>
+            <gestionCompte class="panel">
                 <h2>Un compte ?</h2>
                 <p>Pour faciliter votre visite ce site utilise des cookies. Connectez-vous (ou inscrivez-vous) pour une meilleure expérience.</p>
                 <a href='{{ path('homepage') }}' class="button">Connexion</a>

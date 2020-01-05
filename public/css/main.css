@@ -9,6 +9,15 @@
 .button {
     justify-content: center;
 }
+.panel{
+    margin-top: 1rem;
+    border-radius: 5px;
+    background-color: #fefefe;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+    border: solid 1px #e6e6e6;
+    margin-bottom: 25px;
+    padding: 22px;
+}
 
 
 /* Nav */
