@@ -14,7 +14,7 @@
                 <h2>Recherche</h2>
                 <div class="row">
                     <form id="form" action="">
-                        <input id="term" class="column large-3" type="text" value="Je recherche le terme...">
+                        <input id="term" class="column large-3" type="text" placeholder="Je recherche le terme..." value="">
                         <select id="search-mode" class="column large-3" onchange="setExplanationText()">
                             <option value="" disabled>--Choisir un mode de recherche--</option>
                             <option value="exacte">Exactement</option>
@@ -22,7 +22,7 @@
                             <option value="relation">Par relations</option>
                             <option value="chaine">Par forme de chaîne</option>
                         </select>
-                        <select id="relations" class="column large-3" multiple>
+                        <select id="relations" class="column large-3 default-hiden" multiple>
                             <option value="" disabled>--Choisir une relation--</option>
                             {% for relation in relations %}
                                 <option value="{{ relation }}">{{ relation }}</option>
