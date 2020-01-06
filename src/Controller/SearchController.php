@@ -4,15 +4,32 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 use App\Functions\JDMRequest;
 
 class SearchController extends AbstractController
 {
+    private $cache;
+
+    public function __construct()
+    {
+        $this->cache = new FilesystemAdapter();
+    }
+
     function getHtmlContentFor(string $term){
-      $request = new JDMRequest();
-      $page = $request->getCodeFor($term);
-      return $page;
+
+        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item, $term) {
+            $item->expiresAfter(10);
+
+            $request = new JDMRequest();
+            $page = $request->getCodeFor($term);
+
+            return $page;
+        });
+
+        return $value;
     }
 
     /**
