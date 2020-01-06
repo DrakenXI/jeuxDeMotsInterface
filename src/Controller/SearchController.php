@@ -19,10 +19,8 @@ class SearchController extends AbstractController
     }
 
     function getHtmlContentFor(string $term){
-
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item, $term) {
+        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
             $item->expiresAfter(10);
-
             $request = new JDMRequest();
             $page = $request->getCodeFor($term);
 

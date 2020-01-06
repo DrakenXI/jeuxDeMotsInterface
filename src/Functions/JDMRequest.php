@@ -57,7 +57,12 @@ class JDMRequest
                             $code->datas[$i][5];
                         }
 
-                        $affichage = $affichage . "<tr><td>" . $name . "</td><td>" . $nodeType["id_" . $code->datas[$i][3]][2] . "</td><td>" . $code->datas[$i][4] . "</td></tr>";
+                        $nt = "-1";
+                        if(isset($nodeType["id_" . $code->datas[$i][3]][2])){
+                            $nt = $nodeType["id_" . $code->datas[$i][3]][2];
+                        }
+
+                        $affichage = $affichage . "<tr><td>" . $name . "</td><td>" . $nt . "</td><td>" . $code->datas[$i][4] . "</td></tr>";
                         $entries["id_" . $code->datas[$i][1]] = $name; //on l'ajout dans la liste des entreis
                         break;
                     case 'r':// relation
