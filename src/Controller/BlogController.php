@@ -22,7 +22,7 @@ class BlogController extends AbstractController
             $entity->setIdRelation($item['id']);
             $entity->setName($item['name']);
             $entity->setDescription($item['description']);
-            $entity->setWeigth(0);
+            $entity->setWeight(0);
 
             $entityManager->persist($entity);
         }
