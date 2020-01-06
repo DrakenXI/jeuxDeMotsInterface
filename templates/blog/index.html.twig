@@ -10,7 +10,7 @@
             <h1>{{ title }}</h1>
             <p>Bienvenue sur le navigateur pour Jeux de Mots. Ici vous pouvez naviguer en toute simplicité dans le réseau lexical du <a href="http://www.jeuxdemots.org/jdm-about.php">projet Jeux de Mots</a>.</p>
 
-            <recherche class="panel">
+            <recherche>
                 <h2>Recherche</h2>
                 <div class="row">
                     <form id="form" action="">
@@ -25,15 +25,16 @@
                         <select id="relations" class="column large-3 default-hiden" multiple>
                             <option value="" disabled>--Choisir une relation--</option>
                             {% for relation in relations %}
-                                <option value="{{ relation }}">{{ relation }}</option>
+                                <option value="{{ relation.name }}">{{ relation.name }}</option>
                             {% endfor %}
+                            <option value="more" disabled><a href="/">toto</a></option>
                         </select>
                         <input class="button column large-3" onclick="setAction()" type="submit" value="Submit">
                     </form>
                     <p id="mode-explanation" class="column large-3">Choisissez le mode de recherche.</p>
                 </div><!-- row -->
             </recherche>
-            <gestionCompte class="panel">
+            <gestionCompte>
                 <h2>Un compte ?</h2>
                 <p>Pour faciliter votre visite ce site utilise des cookies. Connectez-vous (ou inscrivez-vous) pour une meilleure expérience.</p>
                 <a href='{{ path('homepage') }}' class="button">Connexion</a>
