@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Oups...{% endblock %}
+
+{% block nav %}{% include 'partials/nav.html.twig' %}{% endblock %}
+
+{% block body %}
+    <div class="callout large primary">
+        <div class="row column text-center">
+            <h1>Oups...</h1>
+            <!-- If there is any flash messages, display them in a pop-up -->
+            <!-- More about flash messages : https://symfony.com/doc/current/controller.html#flash-messages -->
+            {% for message in app.flashes('notice') %}
+            <div data-closable class="callout alert-callout-border success">
+                <strong>Yay!</strong> - {{ message }}
+                <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row" id="content">
+        <p>Il semblerait que le contenu n'est pas disponible. Retour à la <a href='/'>page d'accueil</a>.</p>
+    </div>
+{% endblock %}
+
+{% block footer %}{% include 'partials/footer.html.twig' %}{% endblock %}
