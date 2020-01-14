@@ -22,10 +22,10 @@
                             <option value="relation">Par relations</option>
                             <option value="chaine">Par forme de chaîne</option>
                         </select>
-                        <select id="relations" class="column large-3 default-hiden" multiple>
+                        <select id="relations" class="column large-3 default-hiden" >
                             <option value="" disabled>--Choisir une relation--</option>
                             {% for relation in relations %}
-                                <option value="{{ relation.name }}">{{ relation.name }}</option>
+                                <option value="{{ relation.id}}_{{ relation.name }}">{{ relation.name }}</option>
                             {% endfor %}
                             <option value="more" disabled><a href="/">toto</a></option>
                         </select>

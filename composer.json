@@ -33,10 +33,7 @@
     },
     "require-dev": {
         "symfony/debug-pack": "*",
-<<<<<<< HEAD
-=======
         "symfony/maker-bundle": "^1.14",
->>>>>>> relations ok
         "symfony/profiler-pack": "*",
         "symfony/test-pack": "*"
     },

@@ -12,6 +12,32 @@ class JDMRequest
         $this->cleaner = new CodeCleaner();
     }
 
+    function getApproxFor($term){
+        //$wordCache = getCacheByWord($mot);
+        $wordCache = null;
+
+        //sinon on fait la requete et on nettoie
+        $page = file_get_contents("http://www.jeuxdemots.org/autocompletion/autocompletion.php?completionarg=proposition&proposition=".$term."t&trim=1");
+
+        $response = array();
+        foreach(preg_split("/ \* /",utf8_encode($page)) as $str){
+            array_push($response, $str);
+        }
+        return $response;
+    }
+
+    function getContentRelationIn($relation, $term){
+        //$wordCache = getCacheByWord($mot);
+        $wordCache = null;
+
+        //sinon on fait la requete et on nettoie
+        $page = file_get_contents("http://www.jeuxdemots.org/diko.php?select_relation_type=".$relation."&gotermrel_id=".$term);
+
+        $response = array();
+        // TODO Good luck Ami.
+        return $response;
+    }
+
     function getDataFor($mot)
     {
         //$wordCache = getCacheByWord($mot);
