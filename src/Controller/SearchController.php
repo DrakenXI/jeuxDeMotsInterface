@@ -23,9 +23,6 @@ class SearchController extends AbstractController
             $item->expiresAfter(10);
             $request = new JDMRequest();
             $page = $request->getDataFor($term);
-        //    var_dump($page->entries);
-        //    var_dump($page->relationTypes);
-        //    var_dump($page->relation);
             return $page;
         });
 
