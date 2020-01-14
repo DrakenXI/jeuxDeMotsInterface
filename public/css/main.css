@@ -113,3 +113,7 @@
 .alert-callout-border.warning strong {
   color: #ffae00;
 }
+
+.default-hiden{
+    visibility: hidden;
+}
