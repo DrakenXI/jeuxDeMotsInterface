@@ -12,89 +12,78 @@ class JDMRequest
         $this->cleaner = new CodeCleaner();
     }
 
-    function getCodeFor($mot)
+    function getDataFor($mot)
     {
         //$wordCache = getCacheByWord($mot);
-
         $wordCache = null;
 
-        //sinon on fait la requete et on netoye
-
+        //sinon on fait la requete et on nettoie
         $page = file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $mot . "&rel=");
+        $cleanCode =  $this->cleaner->cleanCode($page);
 
-        $code = $this->cleaner->cleanCode($page);
+        $response = new class{};
+        $response->defs = $cleanCode->defs;
+        $response->relations = $this->extractRelations($cleanCode);
+        //var_dump($response);
+        return $response;
+    }
 
-        $affichage = "<table><thead><tr><th>N°</th><th>Definition</th></tr></thead><tbody>";
-
-
-        for ($i = 1; $i < sizeof($code->defs); $i++) {
-            $affichage = $affichage . "<tr><td>" . $i . "</td><td>" . $code->defs[$i] . "</td></tr>";
-        }
-        $affichage = $affichage . "</tbody></table>";
-
-        $nodeType = array(); //Tableau associatif
-        $relationType = array();
-        $entries = array();
-
-        $rt = 2; //type de relation 2: sortante 3:entrante
-
-        for ($i = 1; $i < sizeof($code->datas); $i++) {
-
-            if (sizeof($code->datas[$i]) >= 2) {//Si c'est des data (supprime les \n)
-
-                switch ($code->datas[$i][0]) {
-                    case 'nt': //node type
-                        $nodeType["id_" . $code->datas[$i][1]] = $code->datas[$i];
-                        break;
-                    case 'rt': //relation type
-                        $relationType["id_" . $code->datas[$i][1]] = $code->datas[$i];
-                        break;
-                    case 'e':// entries
-
-                        $name = $code->datas[$i][2];
-
-                        if (isset($code->datas[$i][5])) {
-                            $code->datas[$i][5];
-                        }
-
-                        $nt = "-1";
-                        if(isset($nodeType["id_" . $code->datas[$i][3]][2])){
-                            $nt = $nodeType["id_" . $code->datas[$i][3]][2];
-                        }
-
-                        $affichage = $affichage . "<tr><td>" . $name . "</td><td>" . $nt . "</td><td>" . $code->datas[$i][4] . "</td></tr>";
-                        $entries["id_" . $code->datas[$i][1]] = $name; //on l'ajout dans la liste des entreis
-                        break;
-                    case 'r':// relation
-                        $ent = "EMPTY";
-                        if(isset($entries["id_" . $code->datas[$i][2]])){
-                            $ent = $entries["id_" . $code->datas[$i][2]];
-                        }
-                        $affichage = $affichage . "<tr><td>" . $ent . "</td><td>" . $relationType["id_" . $code->datas[$i][4]][3] . "</td><td>" . $code->datas[$i][5] . "</td></tr>";
-                        break;
-                    default:
-                        if (strpos($code->datas[$i][0], "// les noeuds/termes (Entries) : e") !== false) {//entrer
-                            $affichage = $affichage . "<table><thead><tr><th>Nom</th><th>Type de noeud</th><th>Poids</th></tr></thead><tbody>";
-                        } elseif (strpos($code->datas[$i][0], "// les relations sortantes : r") !== false) {//relation sortant
-                            $affichage = $affichage . "</tbody></table><table><thead><tr><th>Nom relation sortante</th><th>Type de relation</th><th>Poids</th></tr></thead><tbody>";
-                        } elseif (strpos($code->datas[$i][0], "// les relations entrantes : r") !== false) {//relation entrantes
-                            $affichage = $affichage . "</tbody></table><table><thead><tr><th>Nom relation entrantre</th><th>Type de relation</th><th>Poids</th></tr></thead><tbody>";
-                            $rt = 3;
-                        }
-                        break;
-                }
-
+    /**
+     * Transform objects with nodeTypes, entries, relations and relationTypes
+     * into a associative array filled with relations.
+     *
+     * param : $cleanCode : object from CodeCleaner
+     * returns : associative array of relations.
+     */
+    function extractRelations($cleanCode) {
+        $relations = array();
+        $names = array();
+        // for each relation
+        foreach($cleanCode->relations as &$r){
+            $relation = array();
+            // si relation pas enregitrée, crée une entrée.
+            $isInArray = false;
+            $relationName = $this->getRelationName($r, $cleanCode->relationTypes);
+            if(!in_array($relationName, $names)){
+                array_push($names, $relationName);
+                $relation["id"] = $relationName;
+                $relation["entries"] = array();
+                array_push($relations, $relation);
             }
+            // ajoute l'entrée dans la bonne catégorie de relation
+            foreach($relations as &$relationCategory){
+                if($relationName == $relationCategory["id"]){
+                    $entry = array();
+                    $entry["nodeIn"] = $this->getEntryName($r["nodeIn"], $cleanCode->entries);
+                    $entry["nodeOut"] = $this->getEntryName($r["nodeOut"], $cleanCode->entries);
+                    $entry["weight"] = $r["weight"];
+                    array_push($relationCategory["entries"], $entry);
+                }
+            }
+        }
+        return $relations;
+    }
 
-        }//end for
 
-        $affichage = $affichage . "</tbody></table>";
+    function getRelationName($r, $rts){
+        foreach($rts as $rt){
+            if($rt["id"] === $r["type"]) {
+                return $rt["gpname"];
+            }
+        }
+        return "";
+    }
 
-        /*echo $affichage;
-
-        echo "Node type";
-        print_r($nodeType);*/
-
-        return $affichage;
+    /**
+     * Returns the name of an Entry based on its ID.
+     */
+    function getEntryName($nodeId, $entries){
+        foreach($entries as &$e){
+            var_dump($nodeId);
+            var_dump($e["id"]);
+            if($nodeId == $e["id"])
+                return $e["name"];
+        }
+        return "";
     }
 }

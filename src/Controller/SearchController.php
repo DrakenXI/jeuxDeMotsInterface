@@ -22,8 +22,10 @@ class SearchController extends AbstractController
         $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
             $item->expiresAfter(10);
             $request = new JDMRequest();
-            $page = $request->getCodeFor($term);
-
+            $page = $request->getDataFor($term);
+        //    var_dump($page->entries);
+        //    var_dump($page->relationTypes);
+        //    var_dump($page->relation);
             return $page;
         });
 
@@ -36,7 +38,7 @@ class SearchController extends AbstractController
     public function search(string $term)
     {
         return $this->render('search/index.html.twig', [
-            'title' => 'Affichage du mot ' . $term,
+            'title' => 'Résultat pour ' . $term,
             'content' => $this->getHtmlContentFor($term),
         ]);
     }
@@ -47,7 +49,7 @@ class SearchController extends AbstractController
     public function searchApprox(string $term)
     {
         return $this->render('search/index.html.twig', [
-            'title' => 'Affichage du mot ' . $term,
+            'title' => 'Résultat pour ' . $term,
             'content' => $this->getHtmlContentFor($term),
         ]);
     }
@@ -58,7 +60,7 @@ class SearchController extends AbstractController
     public function searchRelations(string $term, string $relations)
     {
         return $this->render('search/index.html.twig', [
-            'title' => 'Affichage du mot ' . $term,
+            'title' => 'Résultat pour ' . $term,
             'content' => $this->getHtmlContentFor($term),
         ]);
     }

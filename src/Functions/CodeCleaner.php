@@ -36,18 +36,39 @@ class CodeCleaner
     /**
      * Spliting defs (a def is a string beginning par something like "1.") in
      * an array.
-     * TODO attention on a encore les définitions séparées par des exemples
-     * par un <br>
+     * A def may have associated example(s). Thus, returns an associated
+     * array() with array->def and array->examples.
      *
      * param : $code : content (def and relations) from JDM.
-     * returns : an array filled with definitions.
+     * returns : an array filled with associative array (def and examples).
      */
     public function getDefs($code){
         $start = stripos($code,'<def>');
         $stop = stripos($code,'</def>');
         if($start !== false && $stop !== false){
-            $defs = substr($code, $start+5, $stop-$start-7);
-            return preg_split("/([0-9]+\.)/",$defs);
+            $defToParse = substr($code, $start+5, $stop-$start-7);
+            // final array of definitions and examples associated
+            $defs = array();
+            // one of the listed definitions. Began par "number."
+            $aDef = preg_split("/([0-9]+\.)/",$defToParse);
+            for($i = 0 ; $i < count($aDef) ; $i++){
+                // for each definitions
+                if($i != 0) {
+                    $defAndEx = preg_split("/<br \/>/",$aDef[$i]);
+                    $def = array();
+                    // get definition
+                    $def["def"] = $defAndEx[0];
+                    $def["examples"] = array();
+                    // get examples if there is.
+                    for($j = 1 ; $j < count($defAndEx) ; $j++) {
+                        // add the example to def.
+                        array_push($def["examples"],$defAndEx[$j]);
+                    }
+                    // add the def to defs.
+                    array_push($defs, $def);
+                }
+            }
+            return $defs;
         }
         return "";
     }
@@ -85,18 +106,18 @@ class CodeCleaner
                         // si contient nt;, c'est un nodetype
                         $parsedNT = preg_split("/;/", $d);
                         $nTArray = array();
-                        $nTArray["nt"] = $parsedNT[0];
-                        $nTArray["ntid"] = $parsedNT[1];
-                        $nTArray["ntname"] = $parsedNT[2];
+                        //$nTArray["nt"] = $parsedNT[0];
+                        $nTArray["id"] = $parsedNT[1];
+                        $nTArray["name"] = substr($parsedNT[2], 1, strlen($parsedNT[2])-2);
                         array_push($result->nodeTypes, $nTArray);
                     } else if (strpos($d, 'e;') !== false && !$this->isNoise($d, 'e')) {
                         // TODO check all mandatory fields are precised
                         // si contient e; c'est une entrée
                         $parsedE = preg_split("/;/", $d);
                         $eArray = array();
-                        $eArray["e"] = $parsedE[0];
-                        $eArray["eid"] = $parsedE[1];
-                        $eArray["ename"] = $parsedE[2];
+                        //$eArray["e"] = $parsedE[0];
+                        $eArray["id"] = $parsedE[1];
+                        $eArray["name"] = substr($parsedE[2], 1, strlen($parsedE[2])-2);
                         $eArray["type"] = $parsedE[3];
                         $eArray["w"] = $parsedE[4];
                         //$eArray["formattedname"] = $parsedE[5];
@@ -105,21 +126,22 @@ class CodeCleaner
                         // si contient par rt; c'est une relation
                         $parsedRT = preg_split("/;/", $d);
                         $rTArray = array();
-                        $rTArray["rt"] = $parsedRT[0];
-                        $rTArray["rtid"] = $parsedRT[1];
-                        $rTArray["rtname"] = $parsedRT[2];
-                        $rTArray["rtgpname"] = $parsedRT[3];
-                        $rTArray["rthelp"] = $parsedRT[4];
+                        //$rTArray["rt"] = $parsedRT[0];
+                        $rTArray["id"] = $parsedRT[1];
+                        $rTArray["name"] = substr($parsedRT[2], 1, strlen($parsedRT[2])-2);
+                        $rTArray["gpname"] = substr($parsedRT[3], 1, strlen($parsedRT[3])-2);
+                        $rTArray["help"] = substr($parsedRT[4], 1, strlen($parsedRT[4])-2);
                         array_push($result->relationTypes,$rTArray);
                     } else if (strpos($d, 'r;') !== false && !$this->isNoise($d, 'r')) {
                         // si contient par rt; c'est une relation
                         $parsedR = preg_split("/;/", $d);
                         $rArray = array();
-                        $rArray["rt"] = $parsedR[0];
-                        $rArray["rtid"] = $parsedR[1];
-                        $rArray["rtname"] = $parsedR[2];
-                        $rArray["rtgpname"] = $parsedR[3];
-                        $rArray["rthelp"] = $parsedR[4];
+                        //$rArray["r"] = $parsedR[0];
+                        $rArray["id"] = $parsedR[1];
+                        $rArray["nodeIn"] = $parsedR[2];
+                        $rArray["nodeOut"] = $parsedR[3];
+                        $rArray["type"] = $parsedR[4];
+                        $rArray["weight"] = $parsedR[5];
                         array_push($result->relations,$rArray);
                     } else {
                         // sinon, c'est du bruit.

@@ -11,6 +11,56 @@
 <div class="example-wrapper">
     <h1>{{ title }}</h1>
 
-    {{ content|raw }}
+    <definitions>
+    <table>
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Définition</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set i = 1 %}
+            {% for def in content.defs %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td>{{ def.def }}
+                    {% for ex in def.examples %}
+                        <br/><small><i>{{ ex }}</i></small>
+                    {% endfor %}
+                    </td>
+                </tr>
+                {% set i = i + 1 %}
+            {% endfor %}
+        </tbody>
+    </table>
+    </definitions>
+
+    <h2>Relations</h2>
+    <relations>
+        <p>affichage de debug, sera remplacé par des boutons et du JS</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom relation</th>
+                    <th>Noeud entrant</th>
+                    <th>Noeud sortant</th>
+                    <th>Poids</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in content.relations %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    {% for e in r.entries %}
+                        <td>{{ e.nodeIn }}</td>
+                        <td>{{ e.nodeOut }}</td>
+                        <td>{{ e.weight }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </relations>
 </div>
 {% endblock %}
