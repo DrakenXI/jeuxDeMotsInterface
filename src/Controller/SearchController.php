@@ -18,25 +18,20 @@ class SearchController extends AbstractController
         $this->cache = new FilesystemAdapter();
     }
 
-    function getHtmlContentFor(string $term){
+    /**
+     * @Route("/search/{term}", name="search", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     */
+    public function search(string $term)
+    {
         $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
             $item->expiresAfter(10);
             $request = new JDMRequest();
             $page = $request->getDataFor($term);
             return $page;
         });
-
-        return $value;
-    }
-
-    /**
-     * @Route("/search/{term}", name="search", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
-     */
-    public function search(string $term)
-    {
         return $this->render('search/index.html.twig', [
             'title' => 'Résultat pour ' . $term,
-            'content' => $this->getHtmlContentFor($term),
+            'content' => $value,
         ]);
     }
 
@@ -45,20 +40,33 @@ class SearchController extends AbstractController
      */
     public function searchApprox(string $term)
     {
-        return $this->render('search/index.html.twig', [
-            'title' => 'Résultat pour ' . $term,
-            'content' => $this->getHtmlContentFor($term),
+        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter(10);
+            $request = new JDMRequest();
+            $page = $request->getApproxFor($term);
+            return $page;
+        });
+        return $this->render('search/indexApprox.html.twig', [
+            'title' => 'Entrées essemblant à ' . $term,
+            'term' => $term,
+            'content' => $value,
         ]);
     }
 
     /**
-     * @Route("/search-relations/{term}/{relations}", name="search-relations", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*", "relations"="[a-zA-Z0-9]+[a-zA-Z0-9]*&[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     * @Route("/search-relations/{relation}/{term}", name="search-relations", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*", "relation"="[0-9]+[0-9]*"})
      */
-    public function searchRelations(string $term, string $relations)
+    public function searchRelations(string $term, string $relation)
     {
-        return $this->render('search/index.html.twig', [
+        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term, $relation) {
+            $item->expiresAfter(10);
+            $request = new JDMRequest();
+            $page = $request->getContentRelationIn($relation, $term);
+            return $page;
+        });
+        return $this->render('search/indexRelation.html.twig', [
             'title' => 'Résultat pour ' . $term,
-            'content' => $this->getHtmlContentFor($term),
+            'content' => $value,
         ]);
     }
 

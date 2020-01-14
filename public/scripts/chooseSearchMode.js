@@ -6,7 +6,7 @@ function setAction(){
     var mode = document.getElementById('search-mode');
     var term = document.getElementById('term').value;
     var relations = document.getElementById('relations').options;
-    console.log("toto"+relations);
+    //console.log("toto"+relations);
     var formAction;
 
     // depending on the search mode, action will differ.
@@ -17,18 +17,17 @@ function setAction(){
         formAction = "search-approx/"+term;
 
     } else if ("relation" == mode.value) {      // search by relations
-        // gathers wanted relations
+        // gathers wanted relation
         var relationsSelected = "";
         for (var i=0, iLen=relations.length; i<iLen; i++) {
             opt = relations[i];
-            console.log(opt);
+            //console.log(opt);
             if (opt.selected) {
-                relationsSelected+=opt.value+"&";
+                var id = opt.value.split("_");
+                relationSelected=id[0];
             }
         }
-        // remove last & character
-        relationsSelected = relationsSelected.substring(0, relationsSelected.length - 1);
-        formAction = "search-relations/"+term+"/"+relationsSelected;
+        formAction = "search-relations/"+relationSelected+"/"+term;
 
     } else if ("chaine" == mode.value){         // search a string
         formAction = "search-string/"+term;

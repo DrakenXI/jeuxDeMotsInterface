@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Navigateur pour Jeux de Mots{% endblock %}
 
 {% block body %}
 
 <div class="example-wrapper">
-    <h1>Register</h1>
+    <h1>Création de compte</h1>
 
     {{ form_start(registrationForm) }}
         {{ form_row(registrationForm.email) }}
         {{ form_row(registrationForm.plainPassword) }}
         {{ form_row(registrationForm.agreeTerms) }}
 
-        <button class="btn">Register</button>
+        <button class="button">S'enregistrer</button>
     {{ form_end(registrationForm) }}
 
 </div>
