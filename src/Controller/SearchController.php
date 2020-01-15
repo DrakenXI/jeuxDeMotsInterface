@@ -106,7 +106,7 @@ class SearchController extends AbstractController
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getDataFor($term);
-            return $page->relations[$relation];
+            return $page->relations["id_".$relation];
         });
 
         return $this->render('search/entriesDisplay.html.twig', [
