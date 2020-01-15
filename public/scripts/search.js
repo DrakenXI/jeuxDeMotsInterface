@@ -4,21 +4,25 @@
  */
 
 var zoneResult = $("#zone_result");
-var term = $("#term");
+var termBarre = $("#term");
 var searchMode = $("#search-mode");
 var relationSelect = $('#relations');
 
 var rechercheEnCours = false;
 
-var elementClicked = null;
+var submitButton = $("#search-submit-button");
 
 var phraseErreur = "<p>Erreur : Aucuns résultat ou erreur serveur !</p>";
 
+var relationClicked = [];
+
 function searchOnJDM(button){
-    elementClicked = $(button);
-    elementClicked.attr("disabled", true);
+    if(rechercheEnCours){
+        return null;
+    }
+    searchStart();
     zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/rechercheEnCours.gif' alt='recherche en cours'/>");
-    if(term.val() != "" && term.val() != null){
+    if(termBarre.val() != "" && termBarre.val() != null){
         if(searchMode.val() != "" && searchMode.val() != null){
             switch (searchMode.val()) {
                 case'exacte':
@@ -40,7 +44,7 @@ function searchOnJDM(button){
 
 function searchExact(){
     $.ajax({
-        url: 'search/'+term.val(),
+        url: 'search/'+termBarre.val(),
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -59,7 +63,7 @@ function searchExact(){
 
 function searchApproximative(){
     $.ajax({
-        url: 'search-approx/'+term.val(),
+        url: 'search-approx/'+termBarre.val(),
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -77,7 +81,7 @@ function searchApproximative(){
 
 function searchRelation(){
     $.ajax({
-        url: 'search-relations/'+relationSelect.val()+'/'+term.val(),
+        url: 'search-relations/'+relationSelect.val()+'/'+termBarre.val(),
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -93,7 +97,43 @@ function searchRelation(){
     });
 }
 
+function searchEntriesForTermByRelation(relation,term){
+    var zoneResultEntries = $("#"+relation);
+
+    if(rechercheEnCours){
+        zoneResultEntries.html("<p>D'autre recherche sont déjà en cours</p>");
+        return null;
+    }
+
+    searchStart();
+
+    relationClicked[relation] = relation;
+    var buttonRelationClicked =  $("#buttonDisplay_".relation)
+    buttonRelationClicked.attr("disabled", false);
+    $.ajax({
+        url: '/search-entries-for-term-by-relation/'+relation+'/'+term,
+        type: 'GET',
+        dataType : 'html',
+        success : function(code_html, statut){
+            rechercheEnCours = true;
+            zoneResultEntries.html(code_html);
+        },
+        error : function(resultat, statut, erreur){
+            zoneResultEntries.html(phraseErreur);
+        },
+        complete : function(resultat, statut){
+            searchDone();
+            buttonRelationClicked.attr("disabled", true);
+        }
+    });
+}
+
+function searchStart(){
+    rechercheEnCours = true;
+    submitButton.attr("disabled", true);
+}
+
 function searchDone(){
     rechercheEnCours = false;
-    elementClicked.attr("disabled", false);
+    submitButton.attr("disabled", false);
 }

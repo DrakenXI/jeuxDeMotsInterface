@@ -7,7 +7,10 @@
 <div class="example-wrapper">
     <h1>{{ title }}</h1>
 
-    <definitions>
+    <section>
+
+        <input type="hidden" id="term-name" value="{{ term }}"/>
+
     {% if content.defs|length == 0 %}
         <p>Oups. Il semblerait qu'aucune définition n'est encore disponible pour ce terme.</p>
     {% else %}
@@ -34,22 +37,20 @@
             </tbody>
         </table>
     {% endif %}
-    </definitions>
+    </section>
 
-    <h2>Relations</h2>
-    <relations>
+    <section>
+        <h2>Relations</h2>
         {% for r in content.relations %}
             <button class="button" id="buttonDisplay_{{ r.id }}" onclick="displayEntries('{{ r.id }}')">{{ r.id }}</button>
         {% endfor %}
         {% for r in content.relations %}
             <div id="{{ r.id }}" style="display: none;">
                 <h3>Entrée(s) pour la relation {{ r.id }}</h3>
-                {% for e in r.entries %}
-                    <p>{{ e.nodeIn }}--({{ e.weight }})-->{{ e.nodeOut }}</p>
-                {% endfor %}
-
+                {# Remplis par ajax #}
             </div>
         {% endfor %}
-    </relations>
+    </section>
+
 </div>
 {% endblock %}

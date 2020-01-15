@@ -34,10 +34,11 @@ class SearchController extends AbstractController
             $page = $request->getDataFor($term);
             return $page;
         });
-        
+
         return $this->render('search/index.html.twig', [
             'title' => 'Résultat pour ' . $term,
             'content' => $value,
+            'term' => $term,
         ]);
     }
 
@@ -57,6 +58,7 @@ class SearchController extends AbstractController
             'title' => 'Entrées essemblant à ' . $term,
             'term' => $term,
             'content' => $value,
+            'term' => $term,
         ]);
     }
 
@@ -90,6 +92,25 @@ class SearchController extends AbstractController
         return $this->render('search/index.html.twig', [
             'title' => 'Affichage du mot ' . $term,
             'content' => $this->getHtmlContentFor($term),
+            'term' => $term,
+        ]);
+    }
+
+    /**
+     * @Route("/search-entries-for-term-by-relation/{relation}/{term}/", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*"})
+     */
+    public function searchEntriesForTermByRelation(string $relation,string $term)
+    {
+        $nomCache = 'cache-page-exacte-entries-relation-'.convertToAnsi($term)."-".$relation;
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
+            $item->expiresAfter($this->cacheDuraction);
+            $request = new JDMRequest();
+            $page = $request->getDataFor($term);
+            return $page->relations[$relation];
+        });
+
+        return $this->render('search/entriesDisplay.html.twig', [
+            'entries' => $value,
         ]);
     }
 }
