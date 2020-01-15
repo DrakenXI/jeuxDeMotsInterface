@@ -219,7 +219,9 @@ class CodeCleaner
                     if($relationName == $relationCategory["id"]){
                         $entry = array();
                         $entry["nodeIn"] = $this->getEntryName($r["nodeIn"], $cleanCode->entries);
+                        $entry["nodeInId"] = $r["nodeIn"];
                         $entry["nodeOut"] = $this->getEntryName($r["nodeOut"], $cleanCode->entries);
+                        $entry["nodeOutId"] = $r["nodeOut"];
                         $entry["weight"] = $r["weight"];
                         array_push($relationCategory["entries"], $entry);
                     }

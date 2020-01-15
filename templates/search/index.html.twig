@@ -45,7 +45,10 @@
             <div id="{{ r.id }}" style="display: none;">
                 <h3>Entrée(s) pour la relation {{ r.id }}</h3>
                 {% for e in r.entries %}
-                    <p>{{ e.nodeIn }}--({{ e.weight }})-->{{ e.nodeOut }}</p>
+                    <p><a href='{{path('search', {term: e.nodeIn}) }}'>{{ e.nodeIn }}</a>
+                    <div class="roundStuff">{{ e.weight }}</div>
+                    <a href='{{path('search', {term: e.nodeOut}) }}'>{{ e.nodeOut }}</a></p>
+
                 {% endfor %}
 
             </div>

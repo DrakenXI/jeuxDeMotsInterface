@@ -9,7 +9,12 @@
 .button {
     justify-content: center;
 }
-
+.roundStuff {
+    border: 1px solid #1779ba;
+    border-radius: 5000px;
+    padding: 0.285em 0.8em;
+    font-size: 18px;
+}
 
 /* Nav */
 .top-bar *, .top-bar {
