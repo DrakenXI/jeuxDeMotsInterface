@@ -9,12 +9,17 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>Hello {{ app.user.username }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/amapai/git/jeuxDeMotsInterface/src/Controller/UserProfilController.php'|file_link(0) }}">src/Controller/UserProfilController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/amapai/git/jeuxDeMotsInterface/templates/user_profil/index.html.twig'|file_link(0) }}">templates/user_profil/index.html.twig</a></code></li>
-    </ul>
+    <h1 class="h3 mb-3 font-weight-normal">Vos préférences !</h1>
+    <label for="inputNbMaxElem">Nombre maximum d'éléments afficher en même temps</label>
+    <input type="number" value="{{ max_display }}" name="inputNbMaxElem" id="inputNbMaxElem" class="form-control" required autofocus>
+    <label for="displayOrder">Ordre</label>
+    <input type="string" name="displayOrder" id="displayOrder" class="form-control" value="{{ display_order }}" required>
+
+    <button class="btn btn-lg btn-primary" type="submit">
+        Mettre à jour
+    </button>
+
 </div>
 {% endblock %}
