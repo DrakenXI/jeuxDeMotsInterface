@@ -1,3 +1,6 @@
-{% for e in entries %}
-    <p>{{ e.nodeIn }} -- ({{ e.weight }}) --> {{ e.nodeOut }}</p>
+{% for e in r.entries %}
+    <p><a href='{{path('search', {term: e.nodeIn}) }}'>{{ e.nodeIn }}</a>
+    <div class="roundStuff">{{ e.weight }}</div>
+    <a href='{{path('search', {term: e.nodeOut}) }}'>{{ e.nodeOut }}</a></p>
+
 {% endfor %}
