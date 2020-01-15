@@ -63,10 +63,14 @@ class SearchController extends AbstractController
             $item->expiresAfter(10);
             $request = new JDMRequest();
             $page = $request->getContentRelationIn($relation, $term);
+            // TODO correct encoding... encoding ok in var_dump
+            //var_dump($page);
             return $page;
         });
         return $this->render('search/indexRelation.html.twig', [
             'title' => 'Résultat pour ' . $term,
+            'term' => $term, /*TODO recup nom relation*/
+            'relation' => $relation,
             'content' => $value,
         ]);
     }
