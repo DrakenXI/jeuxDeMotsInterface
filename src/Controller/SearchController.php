@@ -34,6 +34,7 @@ class SearchController extends AbstractController
             $page = $request->getDataFor($term);
             return $page;
         });
+        
         return $this->render('search/index.html.twig', [
             'title' => 'Résultat pour ' . $term,
             'content' => $value,
