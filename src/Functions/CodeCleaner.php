@@ -211,6 +211,7 @@ class CodeCleaner
         $names = array();
         // for each relation
         foreach($cleanCode->relations as &$r){
+            var_dump($r);
             if($this->isRelationValid($r["type"])){
                 $relation = array();
                 // si relation pas enregitrée, crée une entrée.
