@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\UserPreferences;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,8 +19,14 @@ class UserProfilController extends AbstractController
     {
 
         // fetch post from DB
+
         $entityManager = $this->getDoctrine()->getManager();
-        $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy(['user_id' => $this->getUser()->id]);
+        //$user = $entityManager->getRepository(User::class)->findOneBy([app.user.name]);
+        $user =$this->get('security.context')->getToken()->getUser();
+        if($user){
+            $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);//$this->getUser()->getId()]);
+        }
+
 
         if(!$preferences){
             return $this->render('user_profil/index.html.twig', [
