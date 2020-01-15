@@ -4,10 +4,11 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\UserPreferencesRepository")
+ */
 class UserPreferences
 {
-
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -16,8 +17,8 @@ class UserPreferences
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy("id"))
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="preferences", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      */
     private $user_id;
 
@@ -27,77 +28,65 @@ class UserPreferences
     private $max_display;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="json", nullable=true)
      */
     private $relations_not_display = [];
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=255)
      */
     private $display_order;
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void
+    public function getUserId(): ?User
     {
-        $this->id = $id;
+        return $this->user_id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMaxDisplay()
+    public function setUserId(User $user_id): self
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getMaxDisplay(): ?int
     {
         return $this->max_display;
     }
 
-    /**
-     * @param mixed $max_display
-     */
-    public function setMaxDisplay($max_display): void
+    public function setMaxDisplay(int $max_display): self
     {
         $this->max_display = $max_display;
+
+        return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getRelationsNotDisplay(): array
+    public function getRelationsNotDisplay(): ?array
     {
         return $this->relations_not_display;
     }
 
-    /**
-     * @param array $relations_not_display
-     */
-    public function setRelationsNotDisplay(array $relations_not_display): void
+    public function setRelationsNotDisplay(?array $relations_not_display): self
     {
         $this->relations_not_display = $relations_not_display;
+
+        return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDisplayOrder()
+    public function getDisplayOrder(): ?string
     {
         return $this->display_order;
     }
 
-    /**
-     * @param mixed $display_order
-     */
-    public function setDisplayOrder($display_order): void
+    public function setDisplayOrder(string $display_order): self
     {
         $this->display_order = $display_order;
-    }
 
+        return $this;
+    }
 }
