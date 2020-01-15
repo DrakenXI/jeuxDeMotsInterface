@@ -12,7 +12,7 @@ var rechercheEnCours = false;
 
 var submitButton = $("#search-submit-button");
 
-var phraseErreur = "<p>Erreur : Aucuns résultat ou erreur serveur !</p>";
+var phraseErreur = "<p>Erreur : Aucun résultat ou erreur serveur !</p>";
 
 var relationClicked = [];
 
@@ -42,9 +42,15 @@ function searchOnJDM(button){
     }
 }
 
-function searchExact(){
+function searchExact(termInLink){
+    if( typeof(termInLink) == 'undefined' ){
+        termInLink = termBarre.val();
+    }
+    else{
+        termInLink.replace(" ", "+");
+    }
     $.ajax({
-        url: 'search/'+termBarre.val(),
+        url: 'search/'+termInLink,
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -101,7 +107,7 @@ function searchEntriesForTermByRelation(relation,term){
     var zoneResultEntries = $("#"+relation);
 
     if(rechercheEnCours){
-        zoneResultEntries.html("<p>D'autre recherche sont déjà en cours</p>");
+        zoneResultEntries.html("<p>D'autres recherches sont déjà en cours</p>");
         searchDone();
         return null;
     }
