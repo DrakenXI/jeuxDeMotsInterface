@@ -17,6 +17,7 @@ var phraseErreur = "<p>Erreur : Aucuns résultat ou erreur serveur !</p>";
 function searchOnJDM(button){
     elementClicked = $(button);
     elementClicked.attr("disabled", true);
+    zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/rechercheEnCours.gif' alt='recherche en cours'/>");
     if(term.val() != "" && term.val() != null){
         if(searchMode.val() != "" && searchMode.val() != null){
             switch (searchMode.val()) {
