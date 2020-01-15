@@ -43,7 +43,7 @@
     <h2>Relations</h2>
     <relations>
         {% for r in content.relations %}
-            <button class="button" onclick="displayEntries('{{ r.id }}')">{{ r.id }}</button>
+            <button class="button" id="buttonDisplay_{{ r.id }}" onclick="displayEntries('{{ r.id }}')">{{ r.id }}</button>
         {% endfor %}
         {% for r in content.relations %}
             <div id="{{ r.id }}" style="display: none;">

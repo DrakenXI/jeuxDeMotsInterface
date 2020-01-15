@@ -117,3 +117,10 @@
 .default-hiden{
     visibility: hidden;
 }
+
+.green-button{
+    background-color: #06CA00 !important;
+}
+.green-button:hover{
+    background-color: #059600 !important;
+}

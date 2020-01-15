@@ -20,6 +20,7 @@ class SearchController extends AbstractController
 
     /**
      * @Route("/search/{term}", name="search", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     * "options" = { "utf8": true }
      */
     public function search(string $term)
     {

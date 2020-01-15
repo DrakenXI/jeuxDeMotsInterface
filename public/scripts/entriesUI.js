@@ -3,9 +3,13 @@
  */
 function displayEntries(id){
     console.log(id);
-    var entry = document.getElementById(id);
-    if(entry.style.display == "block")
+    let entry = document.getElementById(id);
+    let buttonEntry = document.getElementById("buttonDisplay_"+id);
+    if(entry.style.display == "block") {
         entry.style.display = "none";
-    else
-        entry.style.display = "block"
+        buttonEntry.classList.remove("green-button");
+    }else{
+        entry.style.display = "block";
+        buttonEntry.classList.add("green-button");
+    }
 }
