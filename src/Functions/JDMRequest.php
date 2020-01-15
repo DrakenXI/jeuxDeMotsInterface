@@ -7,9 +7,12 @@ class JDMRequest
 
     private $cleaner;
 
+    private $cacheDuraction;
+
     public function __construct()
     {
         $this->cleaner = new CodeCleaner();
+        $this->cacheDuraction = 604800;
     }
 
     /**
@@ -20,8 +23,16 @@ class JDMRequest
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
 
+        $mot = convertToAnsi($mot);
+
         //sinon on fait la requete et on nettoie
-        $page = file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $mot . "&rel=");
+
+        $nomCache = 'cache-req-exacte-'.$mot;
+        $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($mot) {
+            $item->expiresAfter($this->cacheDuraction);
+            $page = file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $mot . "&rel=");
+            return $page;
+        });
 
         $cleanCode =  $this->cleaner->cleanCode($page);
 
@@ -39,7 +50,7 @@ class JDMRequest
         $wordCache = null;
 
         //sinon on fait la requete et on nettoie
-        $page = file_get_contents("http://www.jeuxdemots.org/autocompletion/autocompletion.php?completionarg=proposition&proposition=".$term."t&trim=1");
+        $page = file_get_contents("http://www.jeuxdemots.org/autocompletion/autocompletion.php?completionarg=proposition&proposition=".convertToAnsi($term)."t&trim=1");
 
         $terms = array();
         foreach(preg_split("/ \* /",utf8_encode($page)) as $str){
@@ -55,7 +66,7 @@ class JDMRequest
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
 
-        $termId = $this->cleaner->getTermId(file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $term . "&rel="))[0];
+        $termId = $this->cleaner->getTermId(file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" .convertToAnsi($term) . "&rel="))[0];
         $page = file_get_contents("http://www.jeuxdemots.org/diko.php?select_relation_type=".$relation."&gotermrel_id=".$termId);
         $response = $this->cleaner->getEntriesForRelation($page);
         return $response;

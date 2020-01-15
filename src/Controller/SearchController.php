@@ -8,24 +8,28 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 use App\Functions\JDMRequest;
+use function App\Functions\convertToAnsi;
 
 class SearchController extends AbstractController
 {
     private $cache;
+    
+    private $cacheDuraction;
 
     public function __construct()
     {
         $this->cache = new FilesystemAdapter();
+        $this->cacheDuraction = 604800; //Une semaine
     }
 
     /**
-     * @Route("/search/{term}", name="search", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
-     * "options" = { "utf8": true }
+     * @Route("/search/{term}", name="search", requirements={"term"="[^/]*"})
      */
     public function search(string $term)
     {
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
-            $item->expiresAfter(10);
+        $nomCache = 'cache-page-exacte-'.convertToAnsi($term);
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getDataFor($term);
             return $page;
@@ -37,12 +41,13 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @Route("/search-approx/{term}", name="search-approx", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     * @Route("/search-approx/{term}", name="search-approx", requirements={"term"="[^/]*"})
      */
     public function searchApprox(string $term)
     {
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
-            $item->expiresAfter(10);
+        $nomCache = 'cache-page-approx-'.convertToAnsi($term);
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getApproxFor($term);
             return $page;
@@ -55,12 +60,13 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @Route("/search-relations/{relation}/{term}", name="search-relations", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*", "relation"="[0-9]+[0-9]*"})
+     * @Route("/search-relations/{relation}/{term}", name="search-relations", requirements={"term"="[^/]*", "relation"="[0-9]+[0-9]*"})
      */
     public function searchRelations(string $term, string $relation)
     {
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term, $relation) {
-            $item->expiresAfter(10);
+        $nomCache = 'cache-page-relation-'.convertToAnsi($term).'-'.$relation;
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term, $relation) {
+            $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getContentRelationIn($relation, $term);
             // TODO correct encoding... encoding ok in var_dump
@@ -76,7 +82,7 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @Route("/search-string/{term}", name="search-string", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     * @Route("/search-string/{term}", name="search-string", requirements={"term"="[^/]*"})
      */
     public function searchString(string $term)
     {
