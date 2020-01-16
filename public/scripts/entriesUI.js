@@ -11,12 +11,13 @@ function displayEntries(id){
     let buttonEntry = document.getElementById("buttonDisplay_"+id);
     if(entry.style.display == "block") {
         entry.style.display = "none";
-        if(dejaCharger[id] != true){
-            searchEntriesForTermByRelation(id,termName);
-        }
         buttonEntry.classList.remove("green-button");
     }else{
         entry.style.display = "block";
+        if(dejaCharger[id] != true){
+            searchEntriesForTermByRelation(id,termName);
+            dejaCharger[id] = true;
+        }
         buttonEntry.classList.add("green-button");
     }
 }

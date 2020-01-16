@@ -110,7 +110,7 @@ class CodeCleaner
                         //$nTArray["nt"] = $parsedNT[0];
                         $nTArray["id"] = $parsedNT[1];
                         $nTArray["name"] = substr($parsedNT[2], 1, strlen($parsedNT[2])-2);
-                        $result->relations["id_".$nTArray["id"]] = $nTArray;
+                        array_push($result->nodeTypes, $nTArray);
 
                     } else if (strpos($d, 'e;') !== false && !$this->isNoise($d, 'e')) {
 
@@ -124,7 +124,7 @@ class CodeCleaner
                         $eArray["type"] = $parsedE[3];
                         $eArray["w"] = $parsedE[4];
                         //$eArray["formattedname"] = $parsedE[5];
-                        $result->relations["id_".$eArray["id"]] = $eArray;
+                        array_push($result->entries, $eArray);
 
                     } else if (strpos($d, 'rt;') !== false && !$this->isNoise($d, 'rt')) {
 
@@ -136,7 +136,7 @@ class CodeCleaner
                         $rTArray["name"] = substr($parsedRT[2], 1, strlen($parsedRT[2])-2);
                         $rTArray["gpname"] = substr($parsedRT[3], 1, strlen($parsedRT[3])-2);
                         $rTArray["help"] = substr($parsedRT[4], 1, strlen($parsedRT[4])-2);
-                        $result->relations["id_".$rTArray["id"]] = $rTArray;
+                        array_push($result->relationTypes,$rTArray);
 
                     } else if (strpos($d, 'r;') !== false && !$this->isNoise($d, 'r')) {
 
@@ -149,7 +149,7 @@ class CodeCleaner
                         $rArray["nodeOut"] = $parsedR[3];
                         $rArray["type"] = $parsedR[4];
                         $rArray["weight"] = $parsedR[5];
-                        $result->relations["id_".$rArray["id"]] = $rArray;
+                        array_push($result->relations,$rArray);
 
                     } else {
                         // sinon, c'est du bruit.
@@ -210,8 +210,9 @@ class CodeCleaner
         $relations = array();
         $names = array();
         // for each relation
+
         foreach($cleanCode->relations as &$r){
-            var_dump($r);
+
             if($this->isRelationValid($r["type"])){
                 $relation = array();
                 // si relation pas enregitrée, crée une entrée.
@@ -221,9 +222,13 @@ class CodeCleaner
                     array_push($names, $relationName);
                     $relation["id"] = $relationName;
                     $relation["entries"] = array();
-                    $relations["id_".$relation["id"]] = $relation;
+                    if(!isset($relations["id_".convertToAnsi($relationName)])){
+                        $relations["id_".$relationName] = [];
+                    }
+                    $relations["id_".$relationName] = $relation;
                 }
                 // ajoute l'entrée dans la bonne catégorie de relation
+
                 foreach($relations as &$relationCategory){
                     if($relationName == $relationCategory["id"]){
                         $entry = array();
@@ -237,6 +242,7 @@ class CodeCleaner
                 }
             }
         }
+
         return $relations;
     }
 

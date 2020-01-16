@@ -43,7 +43,15 @@ class JDMRequest
 
         $response = new class{};
         $response->defs = $cleanCode->defs;
-        $response->relations = $this->cleaner->extractRelations($cleanCode);
+
+        $nomCache = 'cache-extract-relation-'.$term;
+        $retour = $this->cache->get($nomCache, function (ItemInterface $item) use ($cleanCode) {
+            $item->expiresAfter($this->cacheDuraction);
+            $retour = $this->cleaner->extractRelations($cleanCode);
+            return $retour;
+        });
+
+        $response->relations = $retour;
         return $response;
     }
 

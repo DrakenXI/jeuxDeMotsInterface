@@ -102,6 +102,7 @@ function searchEntriesForTermByRelation(relation,term){
 
     if(rechercheEnCours){
         zoneResultEntries.html("<p>D'autre recherche sont déjà en cours</p>");
+        searchDone();
         return null;
     }
 
