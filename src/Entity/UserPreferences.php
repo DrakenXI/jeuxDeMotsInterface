@@ -89,4 +89,10 @@ class UserPreferences
 
         return $this;
     }
+
+    public function isAlphaSelected(){
+        if(getDisplayOrder() == "alpha")
+            return true;
+        return false;
+    }
 }

@@ -85,9 +85,10 @@ function searchApproximative(){
     });
 }
 
+/* IMPORTANT : ne pas toucher le split, la route se base sur l'ID de la relation uniquement */
 function searchRelation(){
     $.ajax({
-        url: 'search-relations/'+relationSelect.val()+'/'+termBarre.val(),
+        url: 'search-relations/'+split(relationSelect.val(),"_")[0]+'/'+termBarre.val(),
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
