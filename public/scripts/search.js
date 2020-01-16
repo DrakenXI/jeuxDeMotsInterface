@@ -107,6 +107,7 @@ function searchEntriesForTermByRelation(relation,term){
     }
 
     searchStart();
+    zoneResultEntries.html("<p>Recherche en cours !</p>")
 
     relationClicked[relation] = relation;
     var buttonRelationClicked =  $("#buttonDisplay_".relation)
