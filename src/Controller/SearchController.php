@@ -67,7 +67,7 @@ class SearchController extends AbstractController
      */
     public function searchRelations(string $term, string $relation)
     {
-        $nomCache = 'cache-page-relation-'.convertToAnsi($term).'-'.$relation;
+        $nomCache = 'cache-page-relation-'.convertToAnsi($term).'-'.convertToAnsi($relation);
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term, $relation) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();

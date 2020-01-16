@@ -156,7 +156,7 @@ class CodeCleaner
                     }
                 } // if
             } // for
-            //var_dump($result->relations);
+            var_dump($result->relationTypes);
             return $result;
         }
         return "";
@@ -218,11 +218,12 @@ class CodeCleaner
                 // si relation pas enregitrée, crée une entrée.
                 $isInArray = false;
                 $relationName = $this->getRelationName($r, $cleanCode->relationTypes);
+                $relationNameAnsi = convertToAnsi($relationName);
                 if(!in_array($relationName, $names)){
                     array_push($names, $relationName);
                     $relation["id"] = $relationName;
                     $relation["entries"] = array();
-                    if(!isset($relations["id_".convertToAnsi($relationName)])){
+                    if(!isset($relations["id_".$relationNameAnsi])){
                         $relations["id_".$relationName] = [];
                     }
                     $relations["id_".$relationName] = $relation;
@@ -235,7 +236,10 @@ class CodeCleaner
                 $entry["nodeOut"] = $this->getEntryName($r["nodeOut"], $cleanCode->entries);
                 $entry["nodeOutId"] = $r["nodeOut"];
                 $entry["weight"] = $r["weight"];
-                array_push($relations["id_".convertToAnsi($relationName)]["entries"], $entry);
+                if(!isset($relations["id_".$relationNameAnsi]["entries"])){
+                    $relations["id_".$relationNameAnsi]["entries"] = [];
+                }
+                array_push($relations["id_".$relationNameAnsi]["entries"], $entry);
             }
         }
 

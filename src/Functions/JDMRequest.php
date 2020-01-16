@@ -110,4 +110,6 @@ class JDMRequest
         $response = $this->cleaner->getEntriesForRelation($page);
         return $response;
     }
+
+    //function getRefin;
 }

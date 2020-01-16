@@ -42,14 +42,15 @@
     <section>
         <h2>Relations</h2>
         {% for r in content.relations %}
-            <button class="button" id="buttonDisplay_{{ r.id }}" onclick="displayEntries('{{ r.id }}')">{{ r.id }}</button>
+            {{ dump(r) }}
+{#            <button class="button" id="buttonDisplay_{{ r.id }}" onclick="displayEntries('{{ r.id }}')">{{ r.id }}</button>#}
         {% endfor %}
-        {% for r in content.relations %}
-            <div id="{{ r.id }}" style="display: none;">
-                <h3>Entrée(s) pour la relation {{ r.id }}</h3>
-                {# Remplis par ajax #}
-            </div>
-        {% endfor %}
+{#        {% for r in content.relations %}#}
+{#            <div id="{{ r.id }}" style="display: none;">#}
+{#                <h3>Entrée(s) pour la relation {{ r.id }}</h3>#}
+{#                #}{# Remplis par ajax #}
+{#            </div>#}
+{#        {% endfor %}#}
     </section>
 
 </div>
