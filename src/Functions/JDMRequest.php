@@ -41,6 +41,10 @@ class JDMRequest
 
         $cleanCode =  $this->cleaner->cleanCode($page);
 
+        if(is_null($cleanCode)){
+            return null;
+        }
+
         $response = new class{};
         $response->defs = $cleanCode->defs;
 
@@ -61,6 +65,8 @@ class JDMRequest
     function getApproxFor($term){
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
+
+        $term = convertToAnsi($term);
 
         $nomCache = 'cache-req-approx-'.$term;
         $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
@@ -92,6 +98,8 @@ class JDMRequest
             return $termId;
         });
 
+        $relation = convertToAnsi($relation);
+
         $nomCache = 'cache-req-relation-'.$termId.'-'.$relation;
         $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation,$termId) {
             $item->expiresAfter($this->cacheDuraction);
@@ -101,13 +109,12 @@ class JDMRequest
 
 
         $nomCache = 'cache-clean-relation-'.$termId.'-'.$relation;
-        $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation,$termId) {
+        $response = $this->cache->get($nomCache, function (ItemInterface $item) use ($page) {
             $item->expiresAfter($this->cacheDuraction);
-            $page = file_get_contents("http://www.jeuxdemots.org/diko.php?select_relation_type=".$relation."&gotermrel_id=".$termId);
-            return $page;
+            $response = $this->cleaner->getEntriesForRelation($page);
+            return $response;
         });
 
-        $response = $this->cleaner->getEntriesForRelation($page);
         return $response;
     }
 

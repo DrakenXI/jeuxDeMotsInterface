@@ -35,11 +35,18 @@ class SearchController extends AbstractController
             return $page;
         });
 
-        return $this->render('search/index.html.twig', [
-            'title' => 'Résultat pour ' . $term,
-            'content' => $value,
-            'term' => $term,
-        ]);
+        if(is_null($value)){
+            return $this->render('search/null.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term,
+            ]);
+        }else{
+            return $this->render('search/index.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'content' => $value,
+                'term' => $term,
+            ]);
+        }
     }
 
     /**
@@ -54,12 +61,19 @@ class SearchController extends AbstractController
             $page = $request->getApproxFor($term);
             return $page;
         });
-        return $this->render('search/indexApprox.html.twig', [
-            'title' => 'Entrées essemblant à ' . $term,
-            'term' => $term,
-            'content' => $value,
-            'term' => $term,
-        ]);
+
+        if(is_null($value)){
+            return $this->render('search/null.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term,
+            ]);
+        }else{
+            return $this->render('search/indexApprox.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'content' => $value,
+                'term' => $term,
+            ]);
+        }
     }
 
     /**
@@ -76,12 +90,22 @@ class SearchController extends AbstractController
             //var_dump($page);
             return $page;
         });
-        return $this->render('search/indexRelation.html.twig', [
-            'title' => 'Résultat pour ' . $term,
-            'term' => $term, /*TODO recup nom relation*/
-            'relation' => $relation,
-            'content' => $value,
-        ]);
+
+
+        if(is_null($value)){
+            return $this->render('search/null.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term,
+            ]);
+        }else{
+            return $this->render('search/indexRelation.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term, /*TODO recup nom relation*/
+                'relation' => $relation,
+                'content' => $value,
+            ]);
+        }
+
     }
 
     /**
