@@ -87,7 +87,7 @@ class CodeCleaner
      *
      * returns : an object with accessors : nodeTypes, relationsType, relations, entries.
      */
-    public function getDatas($code, $result){
+    public function getDatas($code, $result, $getReffineDef = false){
         // get content after definitions which are already traited
         $start = stripos($code,'</def>');
         if($start !== false){
@@ -339,6 +339,14 @@ class CodeCleaner
         }else{
             //echo "code non trouver";
         }
+    }
+
+    public function getRefineDefinition($listRefineTerms){
+        $listDef = $listRefineTerms;
+        foreach ($listRefineTerms as $term){
+
+        }
+        return  $listDef;
     }
 
 }
