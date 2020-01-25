@@ -91,7 +91,7 @@ class UserPreferences
     }
 
     public function isAlphaSelected(){
-        if(getDisplayOrder() == "alpha")
+        if($this->getDisplayOrder() == "alpha")
             return true;
         return false;
     }

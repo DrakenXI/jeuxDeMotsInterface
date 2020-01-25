@@ -10,31 +10,18 @@
 
 <div class="example-wrapper">
     <h1 class="h3 mb-3 font-weight-normal">Vos préférences !</h1>
-    <label for="inputNbMaxElem">Nombre d'éléments à afficher en même temps</label>
-    <input type="number" value="{{ max_display }}" name="inputNbMaxElem" id="inputNbMaxElem" class="form-control" required autofocus>
-    <label for="displayOrder">Ordre</label>
-    <select type="string" name="displayOrder" id="displayOrder" class="form-control" required>
-        <option value="alpha" {{ is_alpha_selected }}>Alphabétique</option>
-        <option value="poids" {{ is_weight_selected }}>Poids croissant</option>
-    </select>
-    <label>Relations indésirables</label>
-    <table id="relations">
-    {% set cpt = 0 %}
-    {% for r in relations %}
-        {% if cpt % 3 == 0 %}
-            <tr>
-        {% endif %}
-        <td><input type="checkbox" name="relation" value="{{ r.id }}" checked>  {{ r.name }}</input></td>
-        {% if cpt % 3 == 2 %}
-            </tr>
-        {% endif %}
-        {% set cpt = cpt + 1 %}
-    {% endfor %}
-    </table>
 
-    <a class="button" href="{{path('save-preferences', {username : app.user.id}) }}" type="submit">
-        Mettre à jour
-    </a>
+    <div class="row column">
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {{ form_row(form.max_display, {'label': 'Nombre d\'éléments à afficher en même temps'}) }}
+        {{ form_row(form.display_order, {'label': 'Ordre'}) }}
+        {{ form_row(form.save, { 'label': 'Enregister' }) }}
+    {{ form_end(form) }}
+    </div>
+
+
+
 
 </div>
 {% endblock %}
