@@ -2,11 +2,25 @@
 
 namespace App\Functions;
 
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
+
 /**
  * Gather definition and relation from a request to JDM server..
  */
 class CodeCleaner
 {
+
+    private $cleaner;
+    private $cache;
+
+    public function __construct()
+    {
+        $this->cache = new FilesystemAdapter();
+        $this->cacheDuraction = 5; //604800
+    }
+
+
     /**
      * Get whole HTML content for request (code).
      * From $page, extracts "$code" (interesting part of the server's answer).
@@ -51,9 +65,10 @@ class CodeCleaner
             $defs = array();
             // one of the listed definitions. Began par "number."
             $aDef = preg_split("/([0-9]+\.)/",$defToParse);
-            for($i = 0 ; $i < count($aDef) ; $i++){
+            $nbDef = count($aDef);
+            for($i = 0 ; $i < $nbDef ; $i++){
                 // for each definitions
-                if($i != 0) {
+                if($i != 0 || $nbDef == 1) {
                     $defAndEx = preg_split("/<br \/>/",$aDef[$i]);
                     $def = array();
                     // get definition
@@ -87,7 +102,7 @@ class CodeCleaner
      *
      * returns : an object with accessors : nodeTypes, relationsType, relations, entries.
      */
-    public function getDatas($code, $result, $getReffineDef = false){
+    public function getDatas($code, $result){
         // get content after definitions which are already traited
         $start = stripos($code,'</def>');
         if($start !== false){
@@ -226,7 +241,7 @@ class CodeCleaner
      * param : $cleanCode : object from CodeCleaner
      * returns : associative array of relations.
      */
-    function extractRelations($cleanCode) {
+    function extractRelations($cleanCode, $term) {
         $relations = array();
         // for each relation
 
@@ -259,6 +274,19 @@ class CodeCleaner
                 array_push($relations["id_".$relationNameAnsi]["entries"], $entry);
             }
         }
+
+        //mise en cache spéciale pour les raffinement sémantique.
+        $nomCache = 'cache-raffinement-semantique-liste-'.convertToAnsi($term);
+        $raffName = convertToAnsi("raffinement sémantique");
+        $this->cache->get($nomCache, function (ItemInterface $item) use ($term, $relations,$raffName) {
+            $item->expiresAfter($this->cacheDuraction);
+            if(isset($relations["id_".$raffName])){
+                $resultRaffine = $relations["id_".$raffName];
+            }else{
+                $resultRaffine = null;
+            }
+            return $resultRaffine;
+        });
 
         return $relations;
     }
@@ -339,14 +367,6 @@ class CodeCleaner
         }else{
             //echo "code non trouver";
         }
-    }
-
-    public function getRefineDefinition($listRefineTerms){
-        $listDef = $listRefineTerms;
-        foreach ($listRefineTerms as $term){
-
-        }
-        return  $listDef;
     }
 
 }

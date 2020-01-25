@@ -16,6 +16,22 @@ var phraseErreur = "<p>Erreur : Aucun résultat ou erreur serveur !</p>";
 
 var relationClicked = [];
 
+var resultDefZone = $("#result_raff");
+var sectionRaff = $("#section_raff");
+var titleBalise = $("#titre_resultat");
+
+function searchStart(){
+    rechercheEnCours = true;
+    submitButton.attr("disabled", true);
+    resultDefZone.html(""); //clear du contenue
+}
+
+function searchDone(){
+    rechercheEnCours = false;
+    submitButton.attr("disabled", false);
+    sectionRaff.removeClass("default-hiden");
+}
+
 function searchOnJDM(button){
     if(rechercheEnCours){
         return null;
@@ -24,6 +40,7 @@ function searchOnJDM(button){
     zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/rechercheEnCours.gif' alt='recherche en cours'/>");
     if(termBarre.val() != "" && termBarre.val() != null){
         if(searchMode.val() != "" && searchMode.val() != null){
+            titleBalise.html("Résultat pour : " + termBarre.val());
             switch (searchMode.val()) {
                 case'exacte':
                     searchExact();
@@ -61,6 +78,7 @@ function searchExact(termInLink){
             zoneResult.html(phraseErreur);
         },
         complete : function(resultat, statut){
+            searchRaffinementList();
             searchDone();
         }
     });
@@ -137,12 +155,61 @@ function searchEntriesForTermByRelation(relation,term){
     });
 }
 
-function searchStart(){
-    rechercheEnCours = true;
-    submitButton.attr("disabled", true);
+function getFirstDef(term ,callback){
+    $.ajax({
+        url: 'search-first-definition/'+term,
+        type: 'GET',
+        dataType : 'json',
+        success : function(result, statut){
+            rechercheEnCours = true;
+            callback(JSON.parse(result));
+
+        },
+        error : function(resultat, statut, erreur){
+        },
+        complete : function(resultat, statut){
+        }
+    });
+    callback(null);
 }
 
-function searchDone(){
-    rechercheEnCours = false;
-    submitButton.attr("disabled", false);
+function searchRaffinementList(){
+    $.ajax({
+        url: 'search-raffinement-list/'+termBarre.val(),
+        type: 'GET',
+        dataType : 'json',
+        success : function(result, statut){
+            console.log(result);
+            result = JSON.parse(result);
+            if(result !== null){
+                rechercheEnCours = true;
+                let nbResult = 0;
+                console.log(result.entries)
+                result.entries.forEach(function(e){
+                    getFirstDef(e.nodeOut, function(def){
+                        if(def !== null){
+                            console.log(def[0])
+                            let htmlResult = "<tr><td>"+nbResult+"</td><td>"+def[0].def;
+                            def[0].examples.forEach(function(ex){
+                                htmlResult = htmlResult+"<br/><small><i>"+ex+"</i></small>";
+                            });
+                            htmlResult = htmlResult + "</td></tr>";
+                            console.log(htmlResult)
+                            resultDefZone.append(htmlResult);
+                        }
+                    });
+                    nbResult++;
+                });
+            }else{
+                resultDefZone.append("Acune définition par raffinement trouvé.");
+            }
+        },
+        error : function(resultat, statut, erreur){
+            resultDefZone.append(phraseErreur);
+        },
+        complete : function(resultat, statut){
+
+            searchDone();
+        }
+    });
 }

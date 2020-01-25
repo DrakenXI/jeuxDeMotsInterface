@@ -8,8 +8,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 class JDMRequest
 {
 
-    private $cleaner;
-    private $cache;
+
 
     private $cacheDuraction;
 
@@ -17,7 +16,7 @@ class JDMRequest
     {
         $this->cleaner = new CodeCleaner();
         $this->cache = new FilesystemAdapter();
-        $this->cacheDuraction = 604800;
+        $this->cacheDuraction = 5; //604800
     }
 
     /**
@@ -49,9 +48,9 @@ class JDMRequest
         $response->defs = $cleanCode->defs;
 
         $nomCache = 'cache-extract-relation-'.$term;
-        $retour = $this->cache->get($nomCache, function (ItemInterface $item) use ($cleanCode) {
+        $retour = $this->cache->get($nomCache, function (ItemInterface $item) use ($cleanCode, $term) {
             $item->expiresAfter($this->cacheDuraction);
-            $retour = $this->cleaner->extractRelations($cleanCode);
+            $retour = $this->cleaner->extractRelations($cleanCode, $term);
             return $retour;
         });
 
@@ -117,6 +116,4 @@ class JDMRequest
 
         return $response;
     }
-
-    //function getRefin;
 }

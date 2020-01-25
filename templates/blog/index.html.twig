@@ -5,6 +5,11 @@
 
 {% block body %}
 
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+
     <div data-magellan-target="main-content-section">
         <div class="text-center content">
             <h1>{{ title }}</h1>
@@ -33,6 +38,23 @@
                     </form>
                     <p id="mode-explanation" class="column large-3">Choisissez le mode de recherche.</p>
                 </div><!-- row -->
+            </section>
+
+
+
+            <section id="section_raff" class="default-hiden example-wrapper">
+                <h1 id="titre_resultat"></h1>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Définition par raffinement</th>
+                    </tr>
+                    </thead>
+                    <tbody id="result_raff">
+
+                    </tbody>
+                </table>
             </section>
             <section id="zone_result">
                 {% if not is_granted("IS_AUTHENTICATED_REMEMBERED") %}

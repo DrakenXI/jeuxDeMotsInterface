@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
@@ -19,14 +20,10 @@ class SearchController extends AbstractController
     public function __construct()
     {
         $this->cache = new FilesystemAdapter();
-        $this->cacheDuraction = 604800; //Une semaine
+        $this->cacheDuraction = 5; //Une semaine 604800
     }
 
-    /**
-     * @Route("/search/{term}", name="search", requirements={"term"="[^/]*"})
-     */
-    public function search(string $term)
-    {
+    private function getPage($term){
         $nomCache = 'cache-page-exacte-'.convertToAnsi($term);
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
             $item->expiresAfter($this->cacheDuraction);
@@ -35,6 +32,17 @@ class SearchController extends AbstractController
             return $page;
         });
 
+        return $value;
+    }
+
+    /**
+     * @Route("/search/{term}", name="search", requirements={"term"="[^/]*"})
+     */
+    public function search(string $term)
+    {
+
+        $value = $this->getPage($term);
+
         if(is_null($value)){
             return $this->render('search/null.html.twig', [
                 'title' => 'Résultat pour ' . $term,
@@ -42,7 +50,6 @@ class SearchController extends AbstractController
             ]);
         }else{
             return $this->render('search/index.html.twig', [
-                'title' => 'Résultat pour ' . $term,
                 'content' => $value,
                 'term' => $term,
             ]);
@@ -114,14 +121,13 @@ class SearchController extends AbstractController
     public function searchString(string $term)
     {
         return $this->render('search/index.html.twig', [
-            'title' => 'Affichage du mot ' . $term,
             'content' => $this->getHtmlContentFor($term),
             'term' => $term,
         ]);
     }
 
     /**
-     * @Route("/search-entries-for-term-by-relation/{relation}/{term}/", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*"})
+     * @Route("/search-entries-for-term-by-relation/{relation}/{term}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*"})
      */
     public function searchEntriesForTermByRelation(string $relation,string $term)
     {
@@ -136,5 +142,37 @@ class SearchController extends AbstractController
         return $this->render('search/entriesDisplay.html.twig', [
             'entries' => $value,
         ]);
+    }
+
+    /**
+     * @Route("/search-raffinement-list/{term}", name="search-raffinement-list", requirements={"term"="[^/]*"})
+     */
+    public function searchRaffinementList(string $term)
+    {
+        $nomCache = 'cache-raffinement-semantique-liste-'.convertToAnsi($term);
+
+        $resultRaffine = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter($this->cacheDuraction);
+            $value = $this->getPage($term);
+            return $value->relations["id_".convertToAnsi("raffinement sémantique")];
+        });
+        $result = null;
+        if(!is_null($resultRaffine)){
+            $result = $resultRaffine;
+        }
+        $result = json_encode($result);
+
+        return new JsonResponse($result);
+    }
+
+
+    /**
+     * @Route("/search-first-definition/{term}", name="search-first-definition", requirements={"term"="[^/]*"})
+     */
+    public function searchFirstDefinition(string $term)
+    {
+        $value = $this->getPage($term);
+        $result = json_encode($value->defs);
+        return new JsonResponse($result);
     }
 }
