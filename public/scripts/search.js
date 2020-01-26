@@ -36,10 +36,10 @@ function searchOnJDM(button){
     if(rechercheEnCours){
         return null;
     }
-    searchStart();
-    zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/rechercheEnCours.gif' alt='recherche en cours'/>");
     if(termBarre.val() != "" && termBarre.val() != null){
         if(searchMode.val() != "" && searchMode.val() != null){
+            searchStart();
+            zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/rechercheEnCours.gif' alt='recherche en cours'/>");
             titleBalise.html("Résultat pour : " + termBarre.val());
             switch (searchMode.val()) {
                 case'exacte':
@@ -122,17 +122,17 @@ function searchRelation(){
     });
 }
 
-function searchEntriesForTermByRelation(relation,term){
-    var zoneResultEntries = $("#"+relation);
+function searchEntriesForTermByRelation(relation,term, iddiv){
+    var zoneResultEntries = document.getElementById(iddiv);
 
     if(rechercheEnCours){
-        zoneResultEntries.html("<p>D'autres recherches sont déjà en cours</p>");
+        zoneResultEntries.innerHTML = "<p>D'autres recherches sont déjà en cours</p>";
         searchDone();
         return null;
     }
 
     searchStart();
-    zoneResultEntries.html("<p>Recherche en cours !</p>")
+    zoneResultEntries.innerHTML = "<p>Recherche en cours !</p>";
 
     relationClicked[relation] = relation;
     var buttonRelationClicked =  $("#buttonDisplay_".relation)
@@ -143,10 +143,10 @@ function searchEntriesForTermByRelation(relation,term){
         dataType : 'html',
         success : function(code_html, statut){
             rechercheEnCours = true;
-            zoneResultEntries.html(code_html);
+            zoneResultEntries.innerHTML = code_html;
         },
         error : function(resultat, statut, erreur){
-            zoneResultEntries.html(phraseErreur);
+            zoneResultEntries.innerHTML = phraseErreur;
         },
         complete : function(resultat, statut){
             searchDone();
@@ -161,9 +161,7 @@ function getFirstDef(term ,callback){
         type: 'GET',
         dataType : 'json',
         success : function(result, statut){
-            rechercheEnCours = true;
             callback(JSON.parse(result));
-
         },
         error : function(resultat, statut, erreur){
         },
@@ -179,26 +177,26 @@ function searchRaffinementList(){
         type: 'GET',
         dataType : 'json',
         success : function(result, statut){
-            console.log(result);
+
             result = JSON.parse(result);
             if(result !== null){
                 rechercheEnCours = true;
-                let nbResult = 0;
-                console.log(result.entries)
+                var nbResult = 0;
+
                 result.entries.forEach(function(e){
                     getFirstDef(e.nodeOut, function(def){
                         if(def !== null){
-                            console.log(def[0])
+
                             let htmlResult = "<tr><td>"+nbResult+"</td><td>"+def[0].def;
                             def[0].examples.forEach(function(ex){
                                 htmlResult = htmlResult+"<br/><small><i>"+ex+"</i></small>";
                             });
                             htmlResult = htmlResult + "</td></tr>";
-                            console.log(htmlResult)
+
                             resultDefZone.append(htmlResult);
                         }
+                        nbResult++;
                     });
-                    nbResult++;
                 });
             }else{
                 resultDefZone.append("Acune définition par raffinement trouvé.");
@@ -208,7 +206,6 @@ function searchRaffinementList(){
             resultDefZone.append(phraseErreur);
         },
         complete : function(resultat, statut){
-
             searchDone();
         }
     });
