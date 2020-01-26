@@ -197,14 +197,14 @@ class SearchController extends AbstractController
     }
 
     //utiliser pour créer les fichier json de l'autocomplettion
-//    /**
-//     * @Route("/parsing-entries-from-file", name="parsing-entries-from-file")
-//     */
-//    public function parseEntiresFromFile()
-//    {
-//        $value = getEntriesFromFile();
-//        return $this->render('search/displayDebug.html.twig', [
-//            'value' => $value,
-//        ]);
-//    }
+    /**
+     * @Route("/parsing-entries-from-file", name="parsing-entries-from-file")
+     */
+    public function parseEntiresFromFile()
+    {
+        $value = getEntriesFromFile();
+        return $this->render('search/displayDebug.html.twig', [
+            'value' => $value,
+        ]);
+    }
 }

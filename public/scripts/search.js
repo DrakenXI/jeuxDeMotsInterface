@@ -20,6 +20,9 @@ var resultDefZone = $("#result_raff");
 var sectionRaff = $("#section_raff");
 var titleBalise = $("#titre_resultat");
 
+var autoCompletListe = [];
+var lettreActuelle = "";
+
 function searchStart(){
     rechercheEnCours = true;
     submitButton.attr("disabled", true);
@@ -221,12 +224,13 @@ function searchRaffinementList(){
     });
 }
 
-function getAutoCompletLetter(term ,callback){
+function getAutoCompletLetter(lettre ,callback){
     $.ajax({
-        url: 'search-auto-complet-letter/'+term,
+        url: 'search-auto-complet-letter/'+lettre,
         type: 'GET',
         dataType : 'json',
         success : function(result, statut){
+            console.log(result)
             callback(JSON.parse(result));
         },
         error : function(resultat, statut, erreur){
@@ -237,15 +241,27 @@ function getAutoCompletLetter(term ,callback){
     callback(null);
 }
 
-var lettreTest = [];
-
 $(function(){
-    getAutoCompletLetter("a", function (l) {
-        lettreTest = l;
-        console.log(l)
+    termBarre.keyup(function (e) {
+        if(termBarre.val().charAt(0) != lettreActuelle){
+            let lettre = termBarre.val().charAt(0);
+            if(autoCompletListe[lettre] === undefined){
+                getAutoCompletLetter(lettre, function (l) {
+                    autoCompletListe[lettre] = l;
+                });
+            }
+            if(autoCompletListe[lettre] !== null && autoCompletListe[lettre] !== ""){
+                lettreActuelle = lettre;
+                termBarre.autocomplete("option", "source", autoCompletListe[lettreActuelle]);
+            }else{
+                lettreActuelle = "";
+            }
+        }
     });
+    termBarre.autocomplete({
+        source:[],
+        minLength: 3
+    });
+
 });
 
-termBarre.autocomplete({
-    source:lettreTest
-});

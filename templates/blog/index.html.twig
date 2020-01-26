@@ -21,7 +21,9 @@
                 <h2>Recherche</h2>
                 <div class="row">
                     <form id="form" action="">
-                        <input id="term" class="column large-3" type="text" placeholder="Je recherche le terme..." value="">
+                        <div class="ui-widget">
+                            <input id="term" class="column large-3" type="text" placeholder="Je recherche le terme..." value="">
+                        </div>
                         <select id="search-mode" class="column large-3" onchange="setExplanationText()">
                             <option value="" disabled>--Choisir un mode de recherche--</option>
                             <option value="exacte">Exactement</option>
