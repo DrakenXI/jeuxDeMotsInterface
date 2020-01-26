@@ -4,6 +4,10 @@
 
 var dejaCharger = [];
 
+function resetCharger(){
+    dejaCharger = [];
+}
+
 function displayEntries(id, j){
     let iddiv = "re-"+j;
     let entry = document.getElementById(iddiv);

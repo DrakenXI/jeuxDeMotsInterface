@@ -1,8 +1,8 @@
 {% for e in entries %}
-    <p class="relation">
+    <div class="relation">
         <h2 class="roundStuff">{{ e.weight }}</h2>
-        <a href='{{path('search', {term: e.nodeIn}) }}'>{{ e.nodeIn }}</a> →
-        <a href='{{path('search', {term: e.nodeOut}) }}'>{{ e.nodeOut }}</a>
-    </p>
+        <p onclick="searchOnJDM('{{ e.nodeIn }}', 'exacte');">{{ e.nodeIn }}</p> →
+        <p onclick="searchOnJDM('{{ e.nodeOut }}', 'exacte');">{{ e.nodeOut }}</p>
+    </div>
     <hr>
 {% endfor %}

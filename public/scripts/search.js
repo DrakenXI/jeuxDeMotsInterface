@@ -23,7 +23,6 @@ var titleBalise = $("#titre_resultat");
 function searchStart(){
     rechercheEnCours = true;
     submitButton.attr("disabled", true);
-    resultDefZone.html(""); //clear du contenue
 }
 
 function searchDone(){
@@ -32,18 +31,27 @@ function searchDone(){
     sectionRaff.removeClass("default-hiden");
 }
 
-function searchOnJDM(button){
+function searchOnJDM(term = null, mode = null){
     if(rechercheEnCours){
         return null;
     }
-    if(termBarre.val() != "" && termBarre.val() != null){
-        if(searchMode.val() != "" && searchMode.val() != null){
+    if(term === null){
+        term = termBarre.val();
+    }
+    if(mode === null){
+        mode = searchMode.val();
+    }
+    if(term != "" && term != null){
+        if(mode != "" && mode != null){
+            resetCharger();
             searchStart();
-            zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/rechercheEnCours.gif' alt='recherche en cours'/>");
-            titleBalise.html("Résultat pour : " + termBarre.val());
-            switch (searchMode.val()) {
+            resultDefZone.html(""); //clear du contenue
+            termBarre.val(term);
+            zoneResult.html("<h1>Recherche en cours !</h1><img src='/assets/loading.gif' alt='recherche en cours'/>");
+            titleBalise.html("Résultat pour : " + term);
+            switch (mode) {
                 case'exacte':
-                    searchExact();
+                    searchExact(term);
                     break;
                 case "approximative":
                     searchApproximative();
@@ -182,6 +190,7 @@ function searchRaffinementList(){
             if(result !== null){
                 rechercheEnCours = true;
                 var nbResult = 0;
+                resultDefZone.innerHTML = ""; //on clear
 
                 result.entries.forEach(function(e){
                     getFirstDef(e.nodeOut, function(def){
@@ -194,8 +203,8 @@ function searchRaffinementList(){
                             htmlResult = htmlResult + "</td></tr>";
 
                             resultDefZone.append(htmlResult);
+                            nbResult++;
                         }
-                        nbResult++;
                     });
                 });
             }else{

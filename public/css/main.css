@@ -61,7 +61,7 @@
     border-radius: 5000px;
     padding: 0.285em 0.8em;
     font-size: 18px;
-    width: 100%;
+    width: 15%;
 }
 
 /* Nav */
@@ -70,7 +70,7 @@
 }
 /* pour laisser la place aux boutons a droite du titre */
 .top-bar-left {
-    width:75%;
+    /*width:75%;*/
 }
 
 .top-bar a{
@@ -207,19 +207,30 @@
     height: 100%;
     overflow-y: auto;
 }
-
-.relation{
-     display: flex;
- }
-
 .relation_result hr{
     border-bottom: solid 1px rgba(10,10,10,.1);
     width: 95%;
 }
+.relation_result div:first-child{
+    margin-top: 15px;
+}
 
+.relation{
+    display: flex;
+    margin: auto;
+}
 .relation h2{
     display: inline-block;
+    margin: auto;
 }
-.relation a{
+.relation p{
     display: inline-block;
+    animation-duration: 200ms;
+    margin: auto;
+}
+.relation p:hover {
+    cursor: pointer !important;
+    transform: scale(1.1);
+    text-decoration: underline;
+    animation-duration: 200ms;
 }
