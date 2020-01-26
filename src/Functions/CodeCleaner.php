@@ -2,11 +2,25 @@
 
 namespace App\Functions;
 
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
+
 /**
  * Gather definition and relation from a request to JDM server..
  */
 class CodeCleaner
 {
+
+    private $cleaner;
+    private $cache;
+
+    public function __construct()
+    {
+        $this->cache = new FilesystemAdapter();
+        $this->cacheDuraction = 5; //604800
+    }
+
+
     /**
      * Get whole HTML content for request (code).
      * From $page, extracts "$code" (interesting part of the server's answer).
@@ -51,9 +65,10 @@ class CodeCleaner
             $defs = array();
             // one of the listed definitions. Began par "number."
             $aDef = preg_split("/([0-9]+\.)/",$defToParse);
-            for($i = 0 ; $i < count($aDef) ; $i++){
+            $nbDef = count($aDef);
+            for($i = 0 ; $i < $nbDef ; $i++){
                 // for each definitions
-                if($i != 0) {
+                if($i != 0 || $nbDef == 1) {
                     $defAndEx = preg_split("/<br \/>/",$aDef[$i]);
                     $def = array();
                     // get definition
@@ -103,14 +118,22 @@ class CodeCleaner
                 // if it is "not empty"
                 if(strlen($d) >= 2) {
                     if(strpos($d, 'nt;') !== false && !$this->isNoise($d, 'nt')){
+
                         // si contient nt;, c'est un nodetype
                         $parsedNT = preg_split("/;/", $d);
                         $nTArray = array();
                         //$nTArray["nt"] = $parsedNT[0];
                         $nTArray["id"] = $parsedNT[1];
                         $nTArray["name"] = substr($parsedNT[2], 1, strlen($parsedNT[2])-2);
-                        array_push($result->nodeTypes, $nTArray);
+
+                        $nTId = convertToAnsi($nTArray["id"]);
+                        if(!isset($result->nodeTypes["id_".$nTId])){
+                            $result->nodeTypes["id_".$nTId] = [];
+                        }
+                        $result->nodeTypes["id_".$nTId] = $nTArray;
+
                     } else if (strpos($d, 'e;') !== false && !$this->isNoise($d, 'e')) {
+
                         // TODO check all mandatory fields are precised
                         // si contient e; c'est une entrée
                         $parsedE = preg_split("/;/", $d);
@@ -121,8 +144,15 @@ class CodeCleaner
                         $eArray["type"] = $parsedE[3];
                         $eArray["w"] = $parsedE[4];
                         //$eArray["formattedname"] = $parsedE[5];
-                        array_push($result->entries, $eArray);
+
+                        $eId = convertToAnsi($eArray["id"]);
+                        if(!isset($result->entries["id_".$eId])){
+                            $result->entries["id_".$eId] = [];
+                        }
+                        $result->entries["id_".$eId] = $eArray;
+
                     } else if (strpos($d, 'rt;') !== false && !$this->isNoise($d, 'rt')) {
+
                         // si contient par rt; c'est une relation
                         $parsedRT = preg_split("/;/", $d);
                         $rTArray = array();
@@ -131,8 +161,15 @@ class CodeCleaner
                         $rTArray["name"] = substr($parsedRT[2], 1, strlen($parsedRT[2])-2);
                         $rTArray["gpname"] = substr($parsedRT[3], 1, strlen($parsedRT[3])-2);
                         $rTArray["help"] = substr($parsedRT[4], 1, strlen($parsedRT[4])-2);
-                        array_push($result->relationTypes,$rTArray);
+
+                        $rTId = convertToAnsi($rTArray["id"]);
+                        if(!isset($result->relationTypes["id_".$rTId])){
+                            $result->relationTypes["id_".$rTId] = [];
+                        }
+                        $result->relationTypes["id_".$rTId] = $rTArray;
+
                     } else if (strpos($d, 'r;') !== false && !$this->isNoise($d, 'r')) {
+
                         // si contient par rt; c'est une relation
                         $parsedR = preg_split("/;/", $d);
                         $rArray = array();
@@ -142,13 +179,19 @@ class CodeCleaner
                         $rArray["nodeOut"] = $parsedR[3];
                         $rArray["type"] = $parsedR[4];
                         $rArray["weight"] = $parsedR[5];
-                        array_push($result->relations,$rArray);
+
+                        $rId = convertToAnsi($rArray["id"]);
+                        if(!isset($result->relations["id_".$rId])){
+                            $result->relations["id_".$rId] = [];
+                        }
+                        $result->relations["id_".$rId] = $rArray;
+
                     } else {
                         // sinon, c'est du bruit.
                     }
                 } // if
             } // for
-            //var_dump($result->relations);
+            //var_dump($result->relationTypes);
             return $result;
         }
         return "";
@@ -198,34 +241,53 @@ class CodeCleaner
      * param : $cleanCode : object from CodeCleaner
      * returns : associative array of relations.
      */
-    function extractRelations($cleanCode) {
+    function extractRelations($cleanCode, $term) {
         $relations = array();
-        $names = array();
         // for each relation
+
         foreach($cleanCode->relations as &$r){
+
             if($this->isRelationValid($r["type"])){
                 $relation = array();
                 // si relation pas enregitrée, crée une entrée.
-                $isInArray = false;
                 $relationName = $this->getRelationName($r, $cleanCode->relationTypes);
-                if(!in_array($relationName, $names)){
-                    array_push($names, $relationName);
+
+                $relationNameAnsi = convertToAnsi($relationName);
+
+                if(!isset($relations["id_".$relationNameAnsi])){
+                    $relations["id_".$relationNameAnsi] = [];
+
                     $relation["id"] = $relationName;
                     $relation["entries"] = array();
-                    array_push($relations, $relation);
+
+                    $relations["id_".$relationNameAnsi] = $relation;
                 }
                 // ajoute l'entrée dans la bonne catégorie de relation
-                foreach($relations as &$relationCategory){
-                    if($relationName == $relationCategory["id"]){
-                        $entry = array();
-                        $entry["nodeIn"] = $this->getEntryName($r["nodeIn"], $cleanCode->entries);
-                        $entry["nodeOut"] = $this->getEntryName($r["nodeOut"], $cleanCode->entries);
-                        $entry["weight"] = $r["weight"];
-                        array_push($relationCategory["entries"], $entry);
-                    }
-                }
+
+                $entry = array();
+                $entry["nodeIn"] = $this->getEntryName($r["nodeIn"], $cleanCode->entries);
+                $entry["nodeInId"] = $r["nodeIn"];
+                $entry["nodeOut"] = $this->getEntryName($r["nodeOut"], $cleanCode->entries);
+                $entry["nodeOutId"] = $r["nodeOut"];
+                $entry["weight"] = $r["weight"];
+
+                array_push($relations["id_".$relationNameAnsi]["entries"], $entry);
             }
         }
+
+        //mise en cache spéciale pour les raffinement sémantique.
+        $nomCache = 'cache-raffinement-semantique-liste-'.convertToAnsi($term);
+        $raffName = convertToAnsi("raffinement sémantique");
+        $this->cache->get($nomCache, function (ItemInterface $item) use ($term, $relations,$raffName) {
+            $item->expiresAfter($this->cacheDuraction);
+            if(isset($relations["id_".$raffName])){
+                $resultRaffine = $relations["id_".$raffName];
+            }else{
+                $resultRaffine = null;
+            }
+            return $resultRaffine;
+        });
+
         return $relations;
     }
 
@@ -248,12 +310,13 @@ class CodeCleaner
      * returns : the "grand public" name of a relation.
      */
     function getRelationName($r, $rts){
-        foreach($rts as $rt){
-            if($rt["id"] === $r["type"]) {
-                return $rt["gpname"];
-            }
+        $rtid = convertToAnsi($r["type"]);
+
+        if(isset($rts["id_".$rtid])){
+            return $rts["id_".$rtid]["gpname"];
         }
-        return "";
+
+        return null;
     }
 
     /**
@@ -266,11 +329,13 @@ class CodeCleaner
      * returns : the name of nodeId
      */
     function getEntryName($nodeId, $entries){
-        foreach($entries as &$e){
-            if($nodeId == $e["id"])
-                return $e["name"];
+        $nid = convertToAnsi($nodeId);
+
+        if(isset($entries["id_".$nid])){
+            return $entries["id_".$nid]["name"];
         }
-        return "";
+
+        return null;
     }
 
     /**

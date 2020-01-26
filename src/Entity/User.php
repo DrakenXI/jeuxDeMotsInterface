@@ -35,6 +35,11 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\UserPreferences", mappedBy="user_id", cascade={"persist", "remove"})
+     */
+    private $preferences;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -111,5 +116,22 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getPreferences(): ?UserPreferences
+    {
+        return $this->preferences;
+    }
+
+    public function setPreferences(UserPreferences $preferences): self
+    {
+        $this->preferences = $preferences;
+
+        // set the owning side of the relation if necessary
+        if ($preferences->getUserId() !== $this) {
+            $preferences->setUserId($this);
+        }
+
+        return $this;
     }
 }

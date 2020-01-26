@@ -4,84 +4,164 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 use App\Functions\JDMRequest;
+use function App\Functions\convertToAnsi;
 
 class SearchController extends AbstractController
 {
     private $cache;
 
+    private $cacheDuraction;
+
     public function __construct()
     {
         $this->cache = new FilesystemAdapter();
+        $this->cacheDuraction = 5; //Une semaine 604800
     }
 
-    /**
-     * @Route("/search/{term}", name="search", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
-     */
-    public function search(string $term)
-    {
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
-            $item->expiresAfter(10);
+    private function getPage($term){
+        $nomCache = 'cache-page-exacte-'.convertToAnsi($term);
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getDataFor($term);
             return $page;
         });
-        return $this->render('search/index.html.twig', [
-            'title' => 'Résultat pour ' . $term,
-            'content' => $value,
-        ]);
+
+        return $value;
     }
 
     /**
-     * @Route("/search-approx/{term}", name="search-approx", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     * @Route("/search/{term}", name="search", requirements={"term"="[^/]*"})
+     */
+    public function search(string $term)
+    {
+
+        $value = $this->getPage($term);
+
+        if(is_null($value)){
+            return $this->render('search/null.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term,
+            ]);
+        }else{
+            return $this->render('search/index.html.twig', [
+                'content' => $value,
+                'term' => $term,
+            ]);
+        }
+    }
+
+    /**
+     * @Route("/search-approx/{term}", name="search-approx", requirements={"term"="[^/]*"})
      */
     public function searchApprox(string $term)
     {
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term) {
-            $item->expiresAfter(10);
+        $nomCache = 'cache-page-approx-'.convertToAnsi($term);
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getApproxFor($term);
             return $page;
         });
-        return $this->render('search/indexApprox.html.twig', [
-            'title' => 'Entrées essemblant à ' . $term,
-            'term' => $term,
-            'content' => $value,
-        ]);
+
+        if(is_null($value)){
+            return $this->render('search/null.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term,
+            ]);
+        }else{
+            return $this->render('search/indexApprox.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'content' => $value,
+                'term' => $term,
+            ]);
+        }
     }
 
     /**
-     * @Route("/search-relations/{relation}/{term}", name="search-relations", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*", "relation"="[0-9]+[0-9]*"})
+     * @Route("/search-relations/{relation}/{term}", name="search-relations", requirements={"term"="[^/]*", "relation"="[0-9]+[0-9]*"})
      */
     public function searchRelations(string $term, string $relation)
     {
-        $value = $this->cache->get('cache-'.$term, function (ItemInterface $item) use ($term, $relation) {
-            $item->expiresAfter(10);
+        $nomCache = 'cache-page-relation-'.convertToAnsi($term).'-'.convertToAnsi($relation);
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term, $relation) {
+            $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getContentRelationIn($relation, $term);
             // TODO correct encoding... encoding ok in var_dump
             //var_dump($page);
             return $page;
         });
-        return $this->render('search/indexRelation.html.twig', [
-            'title' => 'Résultat pour ' . $term,
-            'term' => $term, /*TODO recup nom relation*/
-            'relation' => $relation,
-            'content' => $value,
+
+
+        if(is_null($value)){
+            return $this->render('search/null.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term,
+            ]);
+        }else{
+            return $this->render('search/indexRelation.html.twig', [
+                'title' => 'Résultat pour ' . $term,
+                'term' => $term, /*TODO recup nom relation*/
+                'relation' => $relation,
+                'content' => $value,
+            ]);
+        }
+
+    }
+
+    /**
+     * @Route("/search-entries-for-term-by-relation/{relation}/{term}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*"})
+     */
+    public function searchEntriesForTermByRelation(string $relation,string $term)
+    {
+        $nomCache = 'cache-page-exacte-entries-relation-'.convertToAnsi($term)."-".$relation;
+        $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
+            $item->expiresAfter($this->cacheDuraction);
+            $request = new JDMRequest();
+            $page = $request->getDataFor($term);
+            return $page->relations["id_".convertToAnsi($relation)]["entries"];
+        });
+
+        return $this->render('search/entriesDisplay.html.twig', [
+            'entries' => $value,
         ]);
     }
 
     /**
-     * @Route("/search-string/{term}", name="search-string", requirements={"term"="[a-zA-Z0-9]+[a-zA-Z0-9]*"})
+     * @Route("/search-raffinement-list/{term}", name="search-raffinement-list", requirements={"term"="[^/]*"})
      */
-    public function searchString(string $term)
+    public function searchRaffinementList(string $term)
     {
-        return $this->render('search/index.html.twig', [
-            'title' => 'Affichage du mot ' . $term,
-            'content' => $this->getHtmlContentFor($term),
-        ]);
+        $nomCache = 'cache-raffinement-semantique-liste-'.convertToAnsi($term);
+
+        $resultRaffine = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+            $item->expiresAfter($this->cacheDuraction);
+            $value = $this->getPage($term);
+            return $value->relations["id_".convertToAnsi("raffinement sémantique")];
+        });
+        $result = null;
+        if(!is_null($resultRaffine)){
+            $result = $resultRaffine;
+        }
+        $result = json_encode($result);
+
+        return new JsonResponse($result);
+    }
+
+
+    /**
+     * @Route("/search-first-definition/{term}", name="search-first-definition", requirements={"term"="[^/]*"})
+     */
+    public function searchFirstDefinition(string $term)
+    {
+        $value = $this->getPage($term);
+        $result = json_encode($value->defs);
+        return new JsonResponse($result);
     }
 }

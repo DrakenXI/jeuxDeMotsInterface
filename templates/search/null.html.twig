@@ -6,11 +6,14 @@
 
 <div class="example-wrapper">
     <h1>{{ title }}</h1>
-    <p>Les entrées de Jeux de Mots ressemblant le plus au terme que vous recherchez sont :</p>
-    <ul>
-    {% for c in content %}
-        <li><!--<a href=' path('search', {term: term}) ' >-->{{ c }}<!--</a>--></li>
-    {% endfor %}
-    </ul>
+
+    <section>
+
+        <input type="hidden" id="term-name" value="{{ term }}"/>
+
+        <h1>Ce terms n'existe pas !</h1>
+
+    </section>
+
 </div>
 {% endblock %}
