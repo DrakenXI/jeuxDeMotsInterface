@@ -61,8 +61,7 @@
     border-radius: 5000px;
     padding: 0.285em 0.8em;
     font-size: 18px;
-    width: 15%;
-    height: 1%;
+    width: 100%;
 }
 
 /* Nav */
@@ -181,4 +180,46 @@
 }
 .green-button:hover{
     background-color: #059600 !important;
+}
+
+.ultra_large{
+    width: 100%!important;
+}
+
+.relation_content{
+    display: flex;
+    height: 50vh;
+    overflow: auto;
+    width: 100%;
+    border: solid 1px rgba(10,10,10,.1);
+    border-radius: 2px;
+}
+.relation_but {
+    width: 25%;
+    display: inline-block;
+    border-right: solid 1px rgba(10,10,10,.1);
+    height: 100%;
+    overflow-y: auto;
+}
+.relation_result{
+    display: inline-block;
+    width: 75%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.relation{
+     display: flex;
+ }
+
+.relation_result hr{
+    border-bottom: solid 1px rgba(10,10,10,.1);
+    width: 95%;
+}
+
+.relation h2{
+    display: inline-block;
+}
+.relation a{
+    display: inline-block;
 }
