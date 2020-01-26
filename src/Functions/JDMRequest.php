@@ -113,7 +113,20 @@ class JDMRequest
             return $response;
         });
 
-        natcasesort($response);
-        return $response;
+
+        $reference_array = $response;
+        foreach ($reference_array as $key => &$value) {
+          $value = $this->_all_letters_to_ASCII($value);
+        }
+        return $reference_array;
+    }
+
+    /**
+     * Function found on Stackoverflow-sama, helps with alphabetical order.
+     */
+    function _all_letters_to_ASCII($string) {
+        return strtr(utf8_decode($string),
+            utf8_decode('ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ'),
+            'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy');
     }
 }
