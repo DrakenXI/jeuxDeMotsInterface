@@ -23,6 +23,32 @@ class SearchController extends AbstractController
         $this->cacheDuraction = 5; //Une semaine 604800
     }
 
+    private function getPreferences(){
+        // fetch from DB
+        $entityManager = $this->getDoctrine()->getManager();
+
+        // fetch user
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $username]);
+        if($user){
+            // fetch user preferences.
+            $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);
+        }
+
+        // set-up a UserPref object to render in form
+        $prefs = new UserPreferences();
+        if($preferences){
+            // we have some preferences stored in DB for this user
+            $isUpdate = true;
+            $prefs->setMaxDisplay($preferences->getMaxDisplay());
+            $prefs->setDisplayOrder($preferences->getDisplayOrder());
+        } else {
+            // we use default preferences
+            $prefs->setMaxDisplay(20);
+            $prefs->setDisplayOrder("alphabetique");
+        }
+        return $prefs;
+    }
+
     private function getPage($term){
         $nomCache = 'cache-page-exacte-'.convertToAnsi($term);
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
