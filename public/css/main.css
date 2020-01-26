@@ -234,3 +234,7 @@
     text-decoration: underline;
     animation-duration: 200ms;
 }
+
+table{
+    width: 100% !important;
+}

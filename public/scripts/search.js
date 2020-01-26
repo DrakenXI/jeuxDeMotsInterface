@@ -209,7 +209,7 @@ function searchRaffinementList(){
                     });
                 });
             }else{
-                resultDefZone.append("Aucune définition par raffinement trouvé.");
+                resultDefZone.append('<td colspan="2">Aucune définition par raffinement trouvé.</td>');
             }
         },
         error : function(resultat, statut, erreur){
