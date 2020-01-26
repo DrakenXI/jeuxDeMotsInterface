@@ -11,7 +11,6 @@ use Symfony\Contracts\Cache\ItemInterface;
 class CodeCleaner
 {
 
-    private $cleaner;
     private $cache;
 
     public function __construct()

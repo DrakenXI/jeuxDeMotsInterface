@@ -140,7 +140,7 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
     }
 
     searchStart();
-    zoneResultEntries.innerHTML = "<p>Recherche en cours !</p>";
+    zoneResultEntries.innerHTML = "<p>Recherche en cours !</p> <img src='/assets/loading.gif' alt='recherche en cours'/>";
 
     relationClicked[relation] = relation;
     var buttonRelationClicked =  $("#buttonDisplay_".relation)
