@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\UserPreferences;
 use App\Entity\User;
-use App\Entity\Relation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

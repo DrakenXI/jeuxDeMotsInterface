@@ -22,7 +22,7 @@ class JDMRequest
     /**
      * Main research mode
      */
-    function getDataFor($term)
+    function getDataFor($term, $isAlphaOrdered)
     {
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
@@ -53,7 +53,7 @@ class JDMRequest
             $retour = $this->cleaner->extractRelations($cleanCode, $term);
             return $retour;
         });
-
+        // TODO AMI : tri ici
         $response->relations = $retour;
         return $response;
     }
@@ -61,7 +61,7 @@ class JDMRequest
     /**
      * Research all $terms that look like given $term.
      */
-    function getApproxFor($term){
+    function getApproxFor($term, $isAlphaOrdered){
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
 
@@ -74,6 +74,7 @@ class JDMRequest
             return $page;
         });
 
+        // TODO AMI : tri ici
         $terms = array();
         foreach(preg_split("/ \* /",utf8_encode($page)) as $str){
             array_push($terms, $str);
@@ -84,7 +85,7 @@ class JDMRequest
     /**
      * Research entries linked by $term with relation $relation.
      */
-    function getContentRelationIn($relation, $term){
+    function getContentRelationIn($relation, $term, $isAlphaOrdered){
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
 
@@ -96,7 +97,6 @@ class JDMRequest
             $termId = $this->cleaner->getTermId(file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $term . "&rel="))[0];
             return $termId;
         });
-
         $relation = convertToAnsi($relation);
 
         $nomCache = 'cache-req-relation-'.$termId.'-'.$relation;
@@ -106,7 +106,6 @@ class JDMRequest
             return $page;
         });
 
-
         $nomCache = 'cache-clean-relation-'.$termId.'-'.$relation;
         $response = $this->cache->get($nomCache, function (ItemInterface $item) use ($page) {
             $item->expiresAfter($this->cacheDuraction);
@@ -114,6 +113,7 @@ class JDMRequest
             return $response;
         });
 
+        natcasesort($response);
         return $response;
     }
 }

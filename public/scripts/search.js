@@ -113,8 +113,9 @@ function searchApproximative(){
 
 /* IMPORTANT : ne pas toucher le split, la route se base sur l'ID de la relation uniquement */
 function searchRelation(){
+    var relationSplitted = relationSelect.val().split("_");
     $.ajax({
-        url: 'search-relations/'+split(relationSelect.val(),"_")[0]+'/'+termBarre.val(),
+        url: 'search-relations/'+relationSplitted[0]+'/'+termBarre.val(),
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -208,7 +209,7 @@ function searchRaffinementList(){
                     });
                 });
             }else{
-                resultDefZone.append("Acune définition par raffinement trouvé.");
+                resultDefZone.append("Aucune définition par raffinement trouvé.");
             }
         },
         error : function(resultat, statut, erreur){

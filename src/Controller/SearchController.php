@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\UserPreferences;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Security\Core\Security;
 
 use App\Functions\JDMRequest;
 use function App\Functions\convertToAnsi;
@@ -16,37 +19,28 @@ class SearchController extends AbstractController
     private $cache;
 
     private $cacheDuraction;
+    private $username;
 
-    public function __construct()
+    public function __construct(Security $security)
     {
         $this->cache = new FilesystemAdapter();
         $this->cacheDuraction = 5; //Une semaine 604800
+        // initialize var username with username if user connected, else : empty string
+        ($security->getUser())? $this->username = $security->getUser()->getUsername():$this->username = "";
     }
 
-    private function getPreferences(){
-        // fetch from DB
+    /**
+     * Return true if the User preference is alphabetical order.
+     */
+    private function isAlphaOrderPreferred(){
         $entityManager = $this->getDoctrine()->getManager();
-
-        // fetch user
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $username]);
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->username]);
         if($user){
-            // fetch user preferences.
+            // get user preferences.
             $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);
+            return $preferences->isAlphaSelected();
         }
-
-        // set-up a UserPref object to render in form
-        $prefs = new UserPreferences();
-        if($preferences){
-            // we have some preferences stored in DB for this user
-            $isUpdate = true;
-            $prefs->setMaxDisplay($preferences->getMaxDisplay());
-            $prefs->setDisplayOrder($preferences->getDisplayOrder());
-        } else {
-            // we use default preferences
-            $prefs->setMaxDisplay(20);
-            $prefs->setDisplayOrder("alphabetique");
-        }
-        return $prefs;
+        return true;
     }
 
     private function getPage($term){
@@ -54,7 +48,7 @@ class SearchController extends AbstractController
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
-            $page = $request->getDataFor($term);
+            $page = $request->getDataFor($term, $this->isAlphaOrderPreferred());
             return $page;
         });
 
@@ -91,7 +85,7 @@ class SearchController extends AbstractController
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
-            $page = $request->getApproxFor($term);
+            $page = $request->getApproxFor($term, $this->isAlphaOrderPreferred());
             return $page;
         });
 
@@ -118,12 +112,9 @@ class SearchController extends AbstractController
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term, $relation) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
-            $page = $request->getContentRelationIn($relation, $term);
-            // TODO correct encoding... encoding ok in var_dump
-            //var_dump($page);
+            $page = $request->getContentRelationIn($relation, $term, $this->isAlphaOrderPreferred());
             return $page;
         });
-
 
         if(is_null($value)){
             return $this->render('search/null.html.twig', [
@@ -150,7 +141,7 @@ class SearchController extends AbstractController
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
-            $page = $request->getDataFor($term);
+            $page = $request->getDataFor($term, $this->isAlphaOrderPreferred());
             return $page->relations["id_".convertToAnsi($relation)]["entries"];
         });
 
