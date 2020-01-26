@@ -55,40 +55,36 @@ class JDMRequest
 
         $response->relations = $retour;
 
-        /*if($isAlphaOrdered){
         $orderedResponse = $response;
-        foreach($orderedResponse->relations as $relation){
-            $nodesIn = array();
-            $nodesOut = array();
-            foreach ($relation["entries"] as $key => $row)
-            {
-                $nodesIn[$key] = $row['nodeIn'];
-                $nodesOut[$key] = $row['nodeOut'];
+        $orderedRelations = array();
+        if($isAlphaOrdered){
+            foreach($orderedResponse->relations as $id => $relation) {
+                $nodesIn = array();
+                $nodesOut = array();
+                foreach ($relation["entries"] as $key => $row) {
+                    $nodesIn[$key] = $row['nodeIn'];
+                    $nodesOut[$key] = $row['nodeOut'];
+                }
+                array_multisort($nodesIn, SORT_ASC, $nodesOut, SORT_ASC,  $relation["entries"]);
+                $orderedRelations[$id] = array(
+                    "id" =>$relation["id"],
+                    "entries" =>$relation["entries"]
+                );
             }
-            var_dump($nodesIn);
-            var_dump($nodesOut);
-            var_dump($relation["entries"]);
-            array_multisort($nodesIn, SORT_ASC, $nodesOut, SORT_ASC, $relation["entries"]);
-        }
-        } else {*/
-            $orderedResponse = new class{};
-            $orderedResponse->defs = $response->defs;
-            $orderedRelations = array();
-            foreach($response->relations as $relation){
-                $orderedRelation = array();
-                $orderedRelation["id"] = $relation["id"];
+        } else {
+            foreach($orderedResponse->relations as $id => $relation) {
                 $weight = array();
-                foreach ($relation["entries"] as $key => $row)
-                {
+                foreach ($relation["entries"] as $key => $row) {
                     $weight[$key] = $row['weight'];
                 }
-                array_multisort($weight, SORT_ASC,  $relation["entries"]);
-                $orderedRelation["entries"]= $relation["entries"];
-                var_dump($orderedRelation);
-                array_push($orderedRelations, $orderedRelation);
+                array_multisort($weight, SORT_DESC,  $relation["entries"]);
+                $orderedRelations[$id] = array(
+                    "id" =>$relation["id"],
+                    "entries" =>$relation["entries"]
+                );
             }
-            $orderedResponse->relations = $orderedRelations;
-        //}
+        }
+        $orderedResponse->relations = $orderedRelations;
 
         return $orderedResponse;
     }
