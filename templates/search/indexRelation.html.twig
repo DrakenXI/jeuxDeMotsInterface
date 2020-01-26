@@ -1,10 +1,13 @@
 <div class="example-wrapper">
     <p>Les entrées de Jeux de Mots en relation (ID ={{ relation }}) avec le terme {{ term }} sont :</p>
-    <ul>
+    <p>
     {% for c in content %}
-        <p class="button" onclick="searchOnJDM('{{ c }}', 'exacte');" >{% autoescape %}
+        <a onclick="searchOnJDM('{{ c }}', 'exacte');" >{% autoescape %}
             {{ c|raw }} {# var won't be escaped #}
-        {% endautoescape %}</p>
+        {% endautoescape %}</a>
+        {% if not loop.last %}
+            &nbsp; ; &nbsp;
+        {% endif %}
     {% endfor %}
-    </ul>
+    </p>
 </div>
