@@ -58,6 +58,7 @@ class JDMRequest
         $orderedResponse = $response;
         $orderedRelations = array();
         if($isAlphaOrdered){
+
             foreach($orderedResponse->relations as $id => $relation) {
                 $nodesIn = array();
                 $nodesOut = array();
@@ -66,16 +67,20 @@ class JDMRequest
                     $value = $this->_all_letters_to_ASCII($value);
                 }*/
                 foreach ($relation["entries"] as $key => $row) {
+                    //$value = $this->_all_letters_to_ASCII($value['nodeIn']);
                     $nodesIn[$key] = $row['nodeIn'];
-                    //$nodesOut[$key] = $row['nodeOut'];
+                    $nodesOut[$key] = $row['nodeOut'];
                 }
+                //$arrayNodesIn = array_map($this->dirtyConvert(), array_map('strtolower', $nodesIn));
+                //$arrayNodesOut = array_map($this->_all_letters_to_ASCII(), array_map('strtolower', $nodesOut));
                 $arrayNodesIn = array_map('strtolower', $nodesIn);
-                //$arrayNodesOut = array_map('strtolower', $nodesOut);
-                array_multisort($arrayNodesIn, SORT_ASC, SORT_STRING, /*$arrayNodesOut, SORT_ASC, SORT_STRING, */ $relation["entries"]);
+                $arrayNodesOut = array_map('strtolower', $nodesOut);
+                array_multisort($arrayNodesIn, SORT_ASC, SORT_STRING, $arrayNodesOut, SORT_ASC, SORT_STRING, $relation["entries"]);
                 $orderedRelations[$id] = array(
                     "id" =>$relation["id"],
                     "entries" =>$relation["entries"]
                 );
+                //var_dump($orderedRelations[$id]);
             }
         } else {
             foreach($orderedResponse->relations as $id => $relation) {
