@@ -359,6 +359,7 @@ class CodeCleaner
                     $end = strpos(substr($a,1), "<");
                     if($beg !== false && $end !== false){
                         $term = substr($a, $beg, ($end+1)-$beg);
+                        //var_dump($term);
                         array_push($terms, $term);
                     }
                 }
