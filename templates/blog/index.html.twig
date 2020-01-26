@@ -35,9 +35,8 @@
                             {% for relation in relations %}
                                 <option value="{{ relation.idRelation}}_{{ relation.name }}">{{ relation.name }}</option>
                             {% endfor %}
-                            <option value="more" disabled><a href="/">toto</a></option>
                         </select>
-                        <input class="button column large-3" id="search-submit-button" onclick="searchOnJDM()"  value="Rechercher">
+                        <input type="button" class="button column large-3" id="search-submit-button" onclick="searchOnJDM()"  value="Rechercher">
                     </form>
                     <p id="mode-explanation" class="column large-3">Choisissez le mode de recherche.</p>
                 </div><!-- row -->
@@ -46,7 +45,7 @@
 
 
             <section id="section_raff" class="default-hiden example-wrapper">
-                <h1 id="titre_resultat"></h1>
+                <h2 id="titre_resultat"></h2>
                 <table>
                     <thead>
                     <tr>
@@ -55,7 +54,9 @@
                     </tr>
                     </thead>
                     <tbody id="result_raff">
-
+                        <tr>
+                            <td colspan="2">Recherche en cours ! <img src='/assets/loading.gif' alt='recherche en cours'/></td>
+                        </tr>
                     </tbody>
                 </table>
             </section>

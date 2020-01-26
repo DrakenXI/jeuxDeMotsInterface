@@ -11,7 +11,6 @@ use Symfony\Contracts\Cache\ItemInterface;
 class CodeCleaner
 {
 
-    private $cleaner;
     private $cache;
 
     public function __construct()
@@ -359,6 +358,7 @@ class CodeCleaner
                     $end = strpos(substr($a,1), "<");
                     if($beg !== false && $end !== false){
                         $term = substr($a, $beg, ($end+1)-$beg);
+                        //var_dump($term);
                         array_push($terms, $term);
                     }
                 }

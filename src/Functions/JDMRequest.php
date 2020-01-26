@@ -8,8 +8,6 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 class JDMRequest
 {
 
-
-
     private $cacheDuraction;
 
     public function __construct()
@@ -22,7 +20,7 @@ class JDMRequest
     /**
      * Main research mode
      */
-    function getDataFor($term)
+    function getDataFor($term, $isAlphaOrdered)
     {
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
@@ -31,10 +29,11 @@ class JDMRequest
 
         //sinon on fait la requete et on nettoie
 
-        $nomCache = 'cache-req-exacte-'.$term;
-        $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+        $termRe = str_replace(" ", "+", $term);
+        $nomCache = 'cache-req-exacte-'.$termRe;
+        $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($termRe) {
             $item->expiresAfter($this->cacheDuraction);
-            $page = file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $term . "&rel=");
+            $page = file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $termRe . "&rel=");
             return $page;
         });
 
@@ -47,7 +46,7 @@ class JDMRequest
         $response = new class{};
         $response->defs = $cleanCode->defs;
 
-        $nomCache = 'cache-extract-relation-'.$term;
+        $nomCache = 'cache-extract-relation-'.$termRe;
         $retour = $this->cache->get($nomCache, function (ItemInterface $item) use ($cleanCode, $term) {
             $item->expiresAfter($this->cacheDuraction);
             $retour = $this->cleaner->extractRelations($cleanCode, $term);
@@ -55,22 +54,66 @@ class JDMRequest
         });
 
         $response->relations = $retour;
-        return $response;
+
+        $orderedResponse = $response;
+        $orderedRelations = array();
+        if($isAlphaOrdered){
+
+            foreach($orderedResponse->relations as $id => $relation) {
+                $nodesIn = array();
+                $nodesOut = array();
+
+                /*foreach ($orderedResponse as $key => &$value) {
+                    $value = $this->_all_letters_to_ASCII($value);
+                }*/
+                foreach ($relation["entries"] as $key => $row) {
+                    //$value = $this->_all_letters_to_ASCII($value['nodeIn']);
+                    $nodesIn[$key] = $row['nodeIn'];
+                    $nodesOut[$key] = $row['nodeOut'];
+                }
+                //$arrayNodesIn = array_map($this->dirtyConvert(), array_map('strtolower', $nodesIn));
+                //$arrayNodesOut = array_map($this->_all_letters_to_ASCII(), array_map('strtolower', $nodesOut));
+                $arrayNodesIn = array_map('strtolower', $nodesIn);
+                $arrayNodesOut = array_map('strtolower', $nodesOut);
+                array_multisort($arrayNodesIn, SORT_ASC, SORT_STRING, $arrayNodesOut, SORT_ASC, SORT_STRING, $relation["entries"]);
+                $orderedRelations[$id] = array(
+                    "id" =>$relation["id"],
+                    "entries" =>$relation["entries"]
+                );
+                //var_dump($orderedRelations[$id]);
+            }
+        } else {
+            foreach($orderedResponse->relations as $id => $relation) {
+                $weight = array();
+                foreach ($relation["entries"] as $key => $row) {
+                    $weight[$key] = $row['weight'];
+                }
+                array_multisort($weight, SORT_DESC,  $relation["entries"]);
+                $orderedRelations[$id] = array(
+                    "id" =>$relation["id"],
+                    "entries" =>$relation["entries"]
+                );
+            }
+        }
+        $orderedResponse->relations = $orderedRelations;
+
+        return $orderedResponse;
     }
 
     /**
      * Research all $terms that look like given $term.
      */
-    function getApproxFor($term){
+    function getApproxFor($term, $isAlphaOrdered){
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
 
         $term = convertToAnsi($term);
 
+        $termRe = str_replace(" ", "+", $term);
         $nomCache = 'cache-req-approx-'.$term;
-        $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+        $page = $this->cache->get($nomCache, function (ItemInterface $item) use ($termRe) {
             $item->expiresAfter($this->cacheDuraction);
-            $page = file_get_contents("http://www.jeuxdemots.org/autocompletion/autocompletion.php?completionarg=proposition&proposition=".convertToAnsi($term)."t&trim=1");
+            $page = file_get_contents("http://www.jeuxdemots.org/autocompletion/autocompletion.php?completionarg=proposition&proposition=".$termRe."t&trim=1");
             return $page;
         });
 
@@ -78,25 +121,29 @@ class JDMRequest
         foreach(preg_split("/ \* /",utf8_encode($page)) as $str){
             array_push($terms, $str);
         }
-        return $terms;
+        $orderedResponse = $terms;
+        foreach ($orderedResponse as $key => &$value) {
+            $value = $this->_all_letters_to_ASCII($value);
+        }
+        return $orderedResponse;
     }
 
     /**
      * Research entries linked by $term with relation $relation.
      */
-    function getContentRelationIn($relation, $term){
+    function getContentRelationIn($relation, $term, $isAlphaOrdered){
         //$wordCache = getCacheByWord($mot);
         $wordCache = null;
 
         $term = convertToAnsi($term);
 
+        $termRe = str_replace(" ", "+", $term);
         $nomCache = 'cache-req-termId-'.$term;
-        $termId = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
+        $termId = $this->cache->get($nomCache, function (ItemInterface $item) use ($termRe) {
             $item->expiresAfter($this->cacheDuraction);
-            $termId = $this->cleaner->getTermId(file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $term . "&rel="))[0];
+            $termId = $this->cleaner->getTermId(file_get_contents("http://www.jeuxdemots.org/rezo-dump.php?gotermsubmit=Chercher&gotermrel=" . $termRe . "&rel="))[0];
             return $termId;
         });
-
         $relation = convertToAnsi($relation);
 
         $nomCache = 'cache-req-relation-'.$termId.'-'.$relation;
@@ -106,7 +153,6 @@ class JDMRequest
             return $page;
         });
 
-
         $nomCache = 'cache-clean-relation-'.$termId.'-'.$relation;
         $response = $this->cache->get($nomCache, function (ItemInterface $item) use ($page) {
             $item->expiresAfter($this->cacheDuraction);
@@ -114,6 +160,19 @@ class JDMRequest
             return $response;
         });
 
-        return $response;
+        $orderedResponse = $response;
+        foreach ($orderedResponse as $key => &$value) {
+          $value = $this->_all_letters_to_ASCII($value);
+        }
+        return $orderedResponse;
+    }
+
+    /**
+     * Function found on Stackoverflow-sama, helps with alphabetical order.
+     */
+    function _all_letters_to_ASCII($string) {
+        return strtr(utf8_decode($string),
+            utf8_decode('ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ'),
+            'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy');
     }
 }

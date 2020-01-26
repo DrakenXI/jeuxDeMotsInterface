@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\UserPreferences;
 use App\Entity\User;
-use App\Entity\Relation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -27,12 +26,6 @@ class UserProfilController extends AbstractController
         // fetch from DB
         $entityManager = $this->getDoctrine()->getManager();
 
-        // fetch relations for display
-        $relations = $entityManager->getRepository(Relation::class)->findAll();
-        if(!$relations){
-            $relations = "";
-        }
-
         // fetch user
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $username]);
         if($user){
@@ -47,19 +40,12 @@ class UserProfilController extends AbstractController
             $isUpdate = true;
             $prefs->setMaxDisplay($preferences->getMaxDisplay());
             $prefs->setDisplayOrder($preferences->getDisplayOrder());
-            //$prefs->setRelationsNotDisplay($preferences->getRelationsNotDisplay());
-            $prefs->setRelationsNotDisplay($relations);
         } else {
             // we use default preferences
             $prefs->setMaxDisplay(20);
             $prefs->setDisplayOrder("alphabetique");
-            $prefs->setRelationsNotDisplay($relations);
         }
 
-        $r = array();
-        foreach($relations as $rel){
-            array_push($r, $rel->getName());
-        }
         // based on preferences, build the form
         $form = $this->createFormBuilder($prefs)
             ->add('max_display', TextType::class,)
@@ -96,7 +82,6 @@ class UserProfilController extends AbstractController
         return $this->render('user_profil/index.html.twig', [
             'form' => $form->createView(),
             'is_alpha_selected' => $prefs->isAlphaSelected(),
-            'relations' => $relations,
         ]);
     }
 }
