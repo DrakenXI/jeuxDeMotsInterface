@@ -11,10 +11,12 @@
     </style>
 
     <div data-magellan-target="main-content-section">
-        <div class="text-center content">
-            <h1>{{ title }}</h1>
-            <p>Bienvenue sur le navigateur pour Jeux de Mots. Ici vous pouvez naviguer en toute simplicité dans le réseau lexical du <a href="http://www.jeuxdemots.org/jdm-about.php">projet Jeux de Mots</a>.</p>
 
+        <div class="text-center content">
+            <div class="bigBanner large primary">
+                <h1>{{ title }}</h1>
+                <p>Bienvenue sur le navigateur pour Jeux de Mots. Ici vous pouvez naviguer en toute simplicité dans le réseau lexical du <a href="http://www.jeuxdemots.org/jdm-about.php">projet Jeux de Mots</a>.</p>
+            </div>
             <section>
                 <h2>Recherche</h2>
                 <div class="row">
@@ -25,7 +27,8 @@
                             <option value="exacte">Exactement</option>
                             <option value="approximative">Approximativement</option>
                             <option value="relation">Par relations</option>
-                            <option value="chaine">Par forme de chaîne</option>
+                            <!-- Supprime par Amandine car on fait la meme chose que pour l'approximation au final-->
+                            <!--<option value="chaine">Par forme de chaîne</option>-->
                         </select>
                         <select id="relations" class="column large-3 default-hiden" >
                             <option value="" disabled>--Choisir une relation--</option>
@@ -60,8 +63,8 @@
                 {% if not is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                 <h2>Un compte ?</h2>
                 <p>Pour faciliter votre visite ce site utilise des cookies. Connectez-vous (ou inscrivez-vous) pour une meilleure expérience.</p>
-                <a href='{{ path('homepage') }}' class="button">Connexion</a>
-                <a href='{{ path('homepage') }}' class="button">Créer un compte</a>
+                <a href='{{ path('app_login') }}' class="button">Connexion</a>
+                <a href='{{ path('app_register') }}' class="button">Créer un compte</a>
                 {% endif %}
             </section>
         </div><!-- content -->

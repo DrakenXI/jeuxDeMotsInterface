@@ -28,10 +28,6 @@ function setAction(){
             }
         }
         formAction = "search-relations/"+relationSelected+"/"+term;
-
-    } else if ("chaine" == mode.value){         // search a string
-        formAction = "search-string/"+term;
-
     } else {                                    // shall not happen
         formAction = "";
     }
@@ -56,8 +52,6 @@ function setExplanationText() {
     } else if ("relation" == mode.value) {
         text = "Recherche le terme associé à la relation choisie dans Jeux de Mots.";
         relationList.style.visibility = "visible";
-    } else if ("chaine" == mode.value){
-        text = "Recherche la chaîne dans Jeux de Mots.";
     } else {
         text = "Choisissez le mode de recherche.";
     }

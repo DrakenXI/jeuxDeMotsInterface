@@ -14,7 +14,7 @@ use function App\Functions\convertToAnsi;
 class SearchController extends AbstractController
 {
     private $cache;
-    
+
     private $cacheDuraction;
 
     public function __construct()
@@ -113,17 +113,6 @@ class SearchController extends AbstractController
             ]);
         }
 
-    }
-
-    /**
-     * @Route("/search-string/{term}", name="search-string", requirements={"term"="[^/]*"})
-     */
-    public function searchString(string $term)
-    {
-        return $this->render('search/index.html.twig', [
-            'content' => $this->getHtmlContentFor($term),
-            'term' => $term,
-        ]);
     }
 
     /**
