@@ -28,7 +28,6 @@ function searchStart(){
 function searchDone(){
     rechercheEnCours = false;
     submitButton.attr("disabled", false);
-    sectionRaff.removeClass("default-hiden");
 }
 
 function searchOnJDM(term = null, mode = null){
@@ -190,6 +189,7 @@ function searchRaffinementList(){
             result = JSON.parse(result);
             if(result !== null){
                 rechercheEnCours = true;
+                sectionRaff.removeClass("default-hiden");
                 var nbResult = 0;
                 resultDefZone.innerHTML = ""; //on clear
 
