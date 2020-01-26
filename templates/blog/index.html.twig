@@ -35,7 +35,6 @@
                             {% for relation in relations %}
                                 <option value="{{ relation.idRelation}}_{{ relation.name }}">{{ relation.name }}</option>
                             {% endfor %}
-                            <option value="more" disabled><a href="/">toto</a></option>
                         </select>
                         <input type="button" class="button column large-3" id="search-submit-button" onclick="searchOnJDM()"  value="Rechercher">
                     </form>
