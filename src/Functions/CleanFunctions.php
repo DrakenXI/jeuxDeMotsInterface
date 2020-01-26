@@ -2,5 +2,5 @@
 namespace App\Functions;
 
 function convertToAnsi($mot){
-    return iconv("UTF-8", "Windows-1252", $mot);
+    return mb_convert_encoding($mot, "Windows-1252", "UTF-8");
 }

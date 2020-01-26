@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Security;
 
 use App\Functions\JDMRequest;
 use function App\Functions\convertToAnsi;
+use function App\Functions\getEntriesFromFile;
 
 class SearchController extends AbstractController
 {
@@ -181,4 +182,29 @@ class SearchController extends AbstractController
         $result = json_encode($value->defs);
         return new JsonResponse($result);
     }
+
+    /**
+     * @Route("/search-auto-complet-letter/{letter}", name="search-auto-complet-letter", requirements={"letter"="[^/]*"})
+     */
+    public function searchAutoCompletLetter(string $letter)
+    {
+        $result = json_encode(null);
+        $fileName = "./autocompletlist/symbole_".$letter.".json";
+        if(file_exists("$fileName")){
+            $result = file_get_contents($fileName);
+        }
+        return new JsonResponse($result);
+    }
+
+    //utiliser pour créer les fichier json de l'autocomplettion
+//    /**
+//     * @Route("/parsing-entries-from-file", name="parsing-entries-from-file")
+//     */
+//    public function parseEntiresFromFile()
+//    {
+//        $value = getEntriesFromFile();
+//        return $this->render('search/displayDebug.html.twig', [
+//            'value' => $value,
+//        ]);
+//    }
 }

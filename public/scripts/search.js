@@ -220,3 +220,32 @@ function searchRaffinementList(){
         }
     });
 }
+
+function getAutoCompletLetter(term ,callback){
+    $.ajax({
+        url: 'search-auto-complet-letter/'+term,
+        type: 'GET',
+        dataType : 'json',
+        success : function(result, statut){
+            callback(JSON.parse(result));
+        },
+        error : function(resultat, statut, erreur){
+        },
+        complete : function(resultat, statut){
+        }
+    });
+    callback(null);
+}
+
+var lettreTest = [];
+
+$(function(){
+    getAutoCompletLetter("a", function (l) {
+        lettreTest = l;
+        console.log(l)
+    });
+});
+
+termBarre.autocomplete({
+    source:lettreTest
+});
