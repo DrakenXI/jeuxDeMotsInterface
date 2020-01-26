@@ -141,7 +141,7 @@ class SearchController extends AbstractController
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
-            $page = $request->getDataFor($term);
+            $page = $request->getDataFor($term, $this->isAlphaOrderPreferred());
             return $page->relations["id_".convertToAnsi($relation)]["entries"];
         });
 
