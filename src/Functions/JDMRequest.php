@@ -8,8 +8,6 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 class JDMRequest
 {
 
-
-
     private $cacheDuraction;
 
     public function __construct()
@@ -54,9 +52,41 @@ class JDMRequest
             $retour = $this->cleaner->extractRelations($cleanCode, $term);
             return $retour;
         });
-        // TODO AMI : tri ici
+
         $response->relations = $retour;
-        return $response;
+
+        $orderedResponse = $response;
+        $orderedRelations = array();
+        if($isAlphaOrdered){
+            foreach($orderedResponse->relations as $id => $relation) {
+                $nodesIn = array();
+                $nodesOut = array();
+                foreach ($relation["entries"] as $key => $row) {
+                    $nodesIn[$key] = $row['nodeIn'];
+                    $nodesOut[$key] = $row['nodeOut'];
+                }
+                array_multisort($nodesIn, SORT_ASC, $nodesOut, SORT_ASC,  $relation["entries"]);
+                $orderedRelations[$id] = array(
+                    "id" =>$relation["id"],
+                    "entries" =>$relation["entries"]
+                );
+            }
+        } else {
+            foreach($orderedResponse->relations as $id => $relation) {
+                $weight = array();
+                foreach ($relation["entries"] as $key => $row) {
+                    $weight[$key] = $row['weight'];
+                }
+                array_multisort($weight, SORT_DESC,  $relation["entries"]);
+                $orderedRelations[$id] = array(
+                    "id" =>$relation["id"],
+                    "entries" =>$relation["entries"]
+                );
+            }
+        }
+        $orderedResponse->relations = $orderedRelations;
+
+        return $orderedResponse;
     }
 
     /**
@@ -76,12 +106,15 @@ class JDMRequest
             return $page;
         });
 
-        // TODO AMI : tri ici
         $terms = array();
         foreach(preg_split("/ \* /",utf8_encode($page)) as $str){
             array_push($terms, $str);
         }
-        return $terms;
+        $orderedResponse = $terms;
+        foreach ($orderedResponse as $key => &$value) {
+          $value = $this->_all_letters_to_ASCII($value);
+        }
+        return $orderedResponse;
     }
 
     /**
@@ -116,12 +149,11 @@ class JDMRequest
             return $response;
         });
 
-
-        $reference_array = $response;
-        foreach ($reference_array as $key => &$value) {
+        $orderedResponse = $response;
+        foreach ($orderedResponse as $key => &$value) {
           $value = $this->_all_letters_to_ASCII($value);
         }
-        return $reference_array;
+        return $orderedResponse;
     }
 
     /**
