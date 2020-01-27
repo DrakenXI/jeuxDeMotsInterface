@@ -23,7 +23,6 @@ var titleBalise = $("#titre_resultat");
 var autoCompletListe = [];
 var lettreActuelle = "";
 
-
 function searchStart(){
     rechercheEnCours = true;
     submitButton.attr("disabled", true);
@@ -225,12 +224,13 @@ function searchRaffinementList(){
     });
 }
 
-function getAutoCompletLetter(term ,callback){
+function getAutoCompletLetter(lettre ,callback){
     $.ajax({
-        url: 'search-auto-complet-letter/'+term,
+        url: 'search-auto-complet-letter/'+lettre,
         type: 'GET',
         dataType : 'json',
         success : function(result, statut){
+            console.log(result)
             callback(JSON.parse(result));
         },
         error : function(resultat, statut, erreur){
