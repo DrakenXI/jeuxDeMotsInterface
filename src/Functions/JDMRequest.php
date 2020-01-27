@@ -153,9 +153,12 @@ class JDMRequest
         });
 
         $orderedResponse = $response;
-        foreach ($orderedResponse as $key => &$value) {
-          $value = $this->_all_letters_to_ASCII($value);
+        if(!is_null($orderedResponse)){
+            foreach ($orderedResponse as $key => &$value) {
+                $value = $this->_all_letters_to_ASCII($value);
+            }
         }
+
         return $orderedResponse;
     }
 
