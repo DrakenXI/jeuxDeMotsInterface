@@ -25,7 +25,7 @@ class SearchController extends AbstractController
     public function __construct(Security $security)
     {
         $this->cache = new FilesystemAdapter();
-        $this->cacheDuraction = 5; //Une semaine 604800
+        $this->cacheDuraction = 604800; //Une semaine 604800
         // initialize var username with username if user connected, else : empty string
         ($security->getUser())? $this->username = $security->getUser()->getUsername():$this->username = "";
     }
@@ -42,6 +42,18 @@ class SearchController extends AbstractController
             return $preferences->isAlphaSelected();
         }
         return true;
+    }
+
+
+    private function getCpt(){
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->username]);
+        if($user){
+            // get user preferences.
+            $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);
+            return $preferences->getCpt();
+        }
+        return 5;
     }
 
     private function getPage($term){
@@ -148,6 +160,7 @@ class SearchController extends AbstractController
 
         return $this->render('search/entriesDisplay.html.twig', [
             'entries' => $value,
+            'cpt' => $this->getCpt(),
         ]);
     }
 
@@ -161,7 +174,10 @@ class SearchController extends AbstractController
         $resultRaffine = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
             $item->expiresAfter($this->cacheDuraction);
             $value = $this->getPage($term);
-            return $value->relations["id_".convertToAnsi("raffinement sémantique")];
+            if(isset($value->relations["id_".convertToAnsi("raffinement sémantique")])){
+                return $value->relations["id_".convertToAnsi("raffinement sémantique")];
+            }
+            return null;
         });
         $result = null;
         if(!is_null($resultRaffine)){

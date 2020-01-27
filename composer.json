@@ -64,7 +64,6 @@
     },
     "scripts": {
         "auto-scripts": {
-            "composer update":"symfony-cmd",
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
