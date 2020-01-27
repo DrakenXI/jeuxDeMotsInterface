@@ -20,7 +20,6 @@
             <section>
                 <h2>Recherche</h2>
                 <div class="row">
-                    <form id="form" action="">
                         <input id="term" class="column large-3" type="text" placeholder="Je recherche le terme..." value="">
                         <select id="search-mode" class="column large-3" onchange="setExplanationText()">
                             <option value="" disabled>--Choisir un mode de recherche--</option>
@@ -37,7 +36,6 @@
                             {% endfor %}
                         </select>
                         <input type="button" class="button column large-3" id="search-submit-button" onclick="searchOnJDM()"  value="Rechercher">
-                    </form>
                     <p id="mode-explanation" class="column large-3">Choisissez le mode de recherche.</p>
                 </div><!-- row -->
             </section>

@@ -20,6 +20,7 @@ var resultDefZone = $("#result_raff");
 var sectionRaff = $("#section_raff");
 var titleBalise = $("#titre_resultat");
 
+
 function searchStart(){
     rechercheEnCours = true;
     submitButton.attr("disabled", true);
@@ -257,5 +258,6 @@ termBarre.keyup(function(e){
     if(e.keyCode == 13)
     {
         $(this).trigger("enterKey");
+        e.stopPropagation();
     }
 });
