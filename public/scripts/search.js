@@ -20,6 +20,9 @@ var resultDefZone = $("#result_raff");
 var sectionRaff = $("#section_raff");
 var titleBalise = $("#titre_resultat");
 
+var autoCompletListe = [];
+var lettreActuelle = "";
+
 
 function searchStart(){
     rechercheEnCours = true;
@@ -238,17 +241,28 @@ function getAutoCompletLetter(term ,callback){
     callback(null);
 }
 
-var lettreTest = [];
-
 $(function(){
-    getAutoCompletLetter("a", function (l) {
-        lettreTest = l;
-        console.log(l)
+    termBarre.keyup(function (e) {
+        if(termBarre.val().charAt(0) != lettreActuelle){
+            let lettre = termBarre.val().charAt(0);
+            if(autoCompletListe[lettre] === undefined){
+                getAutoCompletLetter(lettre, function (l) {
+                    autoCompletListe[lettre] = l;
+                });
+            }
+            if(autoCompletListe[lettre] !== null && autoCompletListe[lettre] !== ""){
+                lettreActuelle = lettre;
+                termBarre.autocomplete("option", "source", autoCompletListe[lettreActuelle]);
+            }else{
+                lettreActuelle = "";
+            }
+        }
     });
-});
+    termBarre.autocomplete({
+        source:[],
+        minLength: 3
+    });
 
-termBarre.autocomplete({
-    source:lettreTest
 });
 
 termBarre.bind("enterKey",function(e){

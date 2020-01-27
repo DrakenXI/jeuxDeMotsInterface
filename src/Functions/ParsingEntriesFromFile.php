@@ -17,7 +17,7 @@ function getEntriesFromFile(){
         if(isset($ex[0]) && isset($ex[1])){
             $econv = convertToAnsi($ex[1]);
             $firstLetter = strtolower(substr($econv, 0 ,1));
-            if($firstLetter != "*" && $firstLetter != "?" && $firstLetter != "/" && $firstLetter != "\\" && $firstLetter != " "){
+            if(preg_match('/^\w*+$/', ($econv)) && strpos($econv, ' ') === false){
                 $entries[$firstLetter][] = $econv;
             }
         }
@@ -25,8 +25,14 @@ function getEntriesFromFile(){
 
     foreach ($entries as $k => $v){
         $content = json_encode($v);
-        file_put_contents("./autocompletlist/symbole_".$k.".json", $content);
         echo $k." | ";
+        if($content == ""){
+            echo "rencontre un problème d'encodage <br>";
+        }else{
+            echo "OK <br>";
+        }
+        file_put_contents("./autocompletlist/symbole_".$k.".json", $content);
+
     }
 
 
