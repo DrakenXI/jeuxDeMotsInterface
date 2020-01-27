@@ -146,9 +146,9 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @Route("/search-entries-for-term-by-relation/{relation}/{term}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*"})
+     * @Route("/search-entries-for-term-by-relation/{relation}/{term}/{nbClic}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*", "nbClic"="[0-9]*"})
      */
-    public function searchEntriesForTermByRelation(string $relation,string $term)
+    public function searchEntriesForTermByRelation(string $relation,string $term, string $nbClic)
     {
         $nomCache = 'cache-page-exacte-entries-relation-'.convertToAnsi($term)."-".$relation;
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
@@ -157,10 +157,11 @@ class SearchController extends AbstractController
             $page = $request->getDataFor($term, $this->isAlphaOrderPreferred());
             return $page->relations["id_".convertToAnsi($relation)]["entries"];
         });
-
+        $nbClic = intval($nbClic);
         return $this->render('search/entriesDisplay.html.twig', [
             'entries' => $value,
-            'cpt' => $this->getCpt(),
+            'cpt' => ($this->getCpt()*$nbClic),
+            'nbClic' => $nbClic,
         ]);
     }
 

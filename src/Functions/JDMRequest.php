@@ -63,16 +63,10 @@ class JDMRequest
                 $nodesIn = array();
                 $nodesOut = array();
 
-                /*foreach ($orderedResponse as $key => &$value) {
-                    $value = $this->_all_letters_to_ASCII($value);
-                }*/
                 foreach ($relation["entries"] as $key => $row) {
-                    //$value = $this->_all_letters_to_ASCII($value['nodeIn']);
                     $nodesIn[$key] = $row['nodeIn'];
                     $nodesOut[$key] = $row['nodeOut'];
                 }
-                //$arrayNodesIn = array_map($this->dirtyConvert(), array_map('strtolower', $nodesIn));
-                //$arrayNodesOut = array_map($this->_all_letters_to_ASCII(), array_map('strtolower', $nodesOut));
                 $arrayNodesIn = array_map('strtolower', $nodesIn);
                 $arrayNodesOut = array_map('strtolower', $nodesOut);
                 array_multisort($arrayNodesIn, SORT_ASC, SORT_STRING, $arrayNodesOut, SORT_ASC, SORT_STRING, $relation["entries"]);
@@ -80,7 +74,6 @@ class JDMRequest
                     "id" =>$relation["id"],
                     "entries" =>$relation["entries"]
                 );
-                //var_dump($orderedRelations[$id]);
             }
         } else {
             foreach($orderedResponse->relations as $id => $relation) {

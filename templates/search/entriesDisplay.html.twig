@@ -1,9 +1,15 @@
-
+{% set displayedRels = 0%}
 {% for e in entries %}
+    {% if loop.index <= cpt %}
     <div class="relation">
         <h2 class="roundStuff">{{ e.weight }}</h2>
         <p onclick="searchOnJDM('{{ e.nodeIn }}', 'exacte');">{{ e.nodeIn }}</p> →
         <p onclick="searchOnJDM('{{ e.nodeOut }}', 'exacte');">{{ e.nodeOut }}</p>
     </div>
     <hr>
+    {% set displayedRels = loop.index %}
+    {% endif %}
 {% endfor %}
+{% if displayedRels < entries.length %}
+    <button onclick="loadMore({{nbClic})" class="button">Voir plus de relations</button>
+{% endif %}

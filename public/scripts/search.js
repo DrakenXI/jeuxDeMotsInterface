@@ -149,7 +149,26 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
     var buttonRelationClicked =  $("#buttonDisplay_".relation)
     buttonRelationClicked.attr("disabled", false);
     $.ajax({
-        url: '/search-entries-for-term-by-relation/'+relation+'/'+term,
+        url: '/search-entries-for-term-by-relation/'+relation+'/'+term+0,
+        type: 'GET',
+        dataType : 'html',
+        success : function(code_html, statut){
+            rechercheEnCours = true;
+            zoneResultEntries.innerHTML = code_html;
+        },
+        error : function(resultat, statut, erreur){
+            zoneResultEntries.innerHTML = phraseErreur;
+        },
+        complete : function(resultat, statut){
+            searchDone();
+            buttonRelationClicked.attr("disabled", true);
+        }
+    });
+}
+
+function onLoad(nbClic){
+    $.ajax({
+        url: '/search-entries-for-term-by-relation/'+relation+'/'+term+(nbClic+1),
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
