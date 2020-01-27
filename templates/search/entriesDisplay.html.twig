@@ -1,3 +1,4 @@
+{% set displayedRels = 0 %}
 {% for e in entries %}
     {% if loop.index <= cpt %}
     <div class="relation">
@@ -9,6 +10,6 @@
     {% set displayedRels = loop.index %}
     {% endif %}
 {% endfor %}
-{% if displayedRels < entries.length %}
-    <button onclick="loadMore({{relation}}, {{term}}, {{nbClic})" class="button">Voir plus de relations</button>
+{% if displayedRels < entries|length %}
+    <button onclick="loadMore( '{{relation}}', '{{term}}', '{{iddiv}}', {{nbClic}} )" class="button">Voir plus de relations</button>
 {% endif %}

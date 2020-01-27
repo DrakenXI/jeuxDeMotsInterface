@@ -43,7 +43,7 @@ class UserProfilController extends AbstractController
             $prefs->setDisplayOrder($preferences->getDisplayOrder());
         } else {
             // we use default preferences
-            $prefs->setMaxDisplay(20);
+            $prefs->setMaxDisplay(10);
             $prefs->setDisplayOrder("alphabetique");
         }
 
@@ -52,7 +52,7 @@ class UserProfilController extends AbstractController
             ->add('max_display', TextType::class,)
             ->add('display_order', ChoiceType::class, ['choices'  => [
                 'Alphabétique' => "alpha",
-                'Poids croissant' => "poids", ],
+                'Poids décroissant' => "poids", ],
             ])
             ->add('save', SubmitType::class)
             ->getForm();

@@ -38,22 +38,25 @@ class SearchController extends AbstractController
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->username]);
         if($user){
             // get user preferences.
-            $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);
+            $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy(['user_id' => $user]);
+            //var_dump($preferences->isAlphaSelected());
             return $preferences->isAlphaSelected();
         }
         return true;
     }
 
-
+    /**
+     * Returns user prefs for displays or 10 if not precised.
+     */
     private function getCpt(){
         $entityManager = $this->getDoctrine()->getManager();
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->username]);
         if($user){
             // get user preferences.
             $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);
-            return $preferences->getCpt();
+            return $preferences->getMaxDisplay();
         }
-        return 5;
+        return 10;
     }
 
     private function getPage($term){
@@ -146,24 +149,24 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @Route("/search-entries-for-term-by-relation/{relation}/{term}/{nbClic}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*", "nbClic"="[0-9]*"})
+     * @Route("/search-entries-for-term-by-relation/{relation}/{term}/{iddiv}/{nbClic}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*", "iddiv"="[^/]*", "nbClic"="[0-9]*"})
      */
-    public function searchEntriesForTermByRelation(string $relation, string $term, string $nbClic)
+    public function searchEntriesForTermByRelation(string $relation, string $term, string $iddiv, string $nbClic)
     {
         $nomCache = 'cache-page-exacte-entries-relation-'.convertToAnsi($term)."-".$relation;
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getDataFor($term, $this->isAlphaOrderPreferred());
-            var_dump($page);
             return $page->relations["id_".convertToAnsi($relation)]["entries"];
         });
         $nbClic = intval($nbClic);
         return $this->render('search/entriesDisplay.html.twig', [
             'entries' => $value,
-            'cpt' => ($this->getCpt()*$nbClic),
+            'cpt' => $this->getCpt()*$nbClic,
             'nbClic' => $nbClic,
             'term' => $term,
+            'iddiv' => $iddiv,
             'relation' =>$relation
         ]);
     }

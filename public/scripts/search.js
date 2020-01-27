@@ -149,7 +149,7 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
     var buttonRelationClicked =  $("#buttonDisplay_".relation)
     buttonRelationClicked.attr("disabled", false);
     $.ajax({
-        url: '/search-entries-for-term-by-relation/'+relation+'/'+term+0,
+        url: '/search-entries-for-term-by-relation/'+relation+'/'+term+'/'+iddiv+'/'+1,
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -166,9 +166,27 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
     });
 }
 
-/*function loadMore(relation,term,nbClic){
+/*
+ * Used to reload more entries
+ */
+function loadMore(relation, term, iddiv, nbClic){
+    var zoneResultEntries = document.getElementById(iddiv);
+
+    if(rechercheEnCours){
+        zoneResultEntries.innerHTML = "<p>D'autres recherches sont déjà en cours</p>";
+        searchDone();
+        return null;
+    }
+
+    searchStart();
+    zoneResultEntries.innerHTML = "<p>Recherche en cours !</p> <img src='/assets/loading.gif' alt='recherche en cours'/>";
+
+    relationClicked[relation] = relation;
+    var buttonRelationClicked =  $("#buttonDisplay_".relation)
+    buttonRelationClicked.attr("disabled", false);
+    let nb = nbClic+1;
     $.ajax({
-        url: '/search-entries-for-term-by-relation/'+relation+'/'+term+(nbClic+1),
+        url: '/search-entries-for-term-by-relation/'+relation+'/'+term+'/'+iddiv+'/'+nb,
         type: 'GET',
         dataType : 'html',
         success : function(code_html, statut){
@@ -183,7 +201,7 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
             buttonRelationClicked.attr("disabled", true);
         }
     });
-}*/
+}
 
 function getFirstDef(term ,callback){
     $.ajax({
