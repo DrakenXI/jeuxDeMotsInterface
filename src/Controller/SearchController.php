@@ -148,13 +148,14 @@ class SearchController extends AbstractController
     /**
      * @Route("/search-entries-for-term-by-relation/{relation}/{term}/{nbClic}", name="search-entries-for-term-by-relation", requirements={"term"="[^/]*","relation"="[^/]*", "nbClic"="[0-9]*"})
      */
-    public function searchEntriesForTermByRelation(string $relation,string $term, string $nbClic)
+    public function searchEntriesForTermByRelation(string $relation, string $term, string $nbClic)
     {
         $nomCache = 'cache-page-exacte-entries-relation-'.convertToAnsi($term)."-".$relation;
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($relation, $term) {
             $item->expiresAfter($this->cacheDuraction);
             $request = new JDMRequest();
             $page = $request->getDataFor($term, $this->isAlphaOrderPreferred());
+            var_dump($page);
             return $page->relations["id_".convertToAnsi($relation)]["entries"];
         });
         $nbClic = intval($nbClic);
@@ -162,6 +163,8 @@ class SearchController extends AbstractController
             'entries' => $value,
             'cpt' => ($this->getCpt()*$nbClic),
             'nbClic' => $nbClic,
+            'term' => $term,
+            'relation' =>$relation
         ]);
     }
 

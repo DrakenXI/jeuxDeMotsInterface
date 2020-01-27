@@ -11,5 +11,5 @@
     {% endif %}
 {% endfor %}
 {% if displayedRels < entries.length %}
-    <button onclick="loadMore({{nbClic})" class="button">Voir plus de relations</button>
+    <button onclick="loadMore({{relation}}, {{term}}, {{nbClic})" class="button">Voir plus de relations</button>
 {% endif %}

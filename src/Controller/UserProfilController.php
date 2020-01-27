@@ -35,6 +35,7 @@ class UserProfilController extends AbstractController
 
         // set-up a UserPref object to render in form
         $prefs = new UserPreferences();
+        $isUpdate = false;
         if($preferences){
             // we have some preferences stored in DB for this user
             $isUpdate = true;
@@ -71,6 +72,8 @@ class UserProfilController extends AbstractController
                 $preferences->setUserId($user);
             } else {
                 // insert new entity in DB
+                $newPrefs->setUserId($user);
+                $newPrefs->setRelationsNotDisplay(array());
                 $entityManager->persist($newPrefs);
             }
             $entityManager->flush();

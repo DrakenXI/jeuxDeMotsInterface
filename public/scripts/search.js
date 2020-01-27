@@ -166,7 +166,7 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
     });
 }
 
-function onLoad(nbClic){
+function onLoad(relation,term,nbClic){
     $.ajax({
         url: '/search-entries-for-term-by-relation/'+relation+'/'+term+(nbClic+1),
         type: 'GET',
