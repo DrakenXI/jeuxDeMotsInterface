@@ -14,7 +14,7 @@ class JDMRequest
     {
         $this->cleaner = new CodeCleaner();
         $this->cache = new FilesystemAdapter();
-        $this->cacheDuraction = 5; //604800
+        $this->cacheDuraction = 604800;
     }
 
     /**

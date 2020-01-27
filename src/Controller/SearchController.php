@@ -25,7 +25,7 @@ class SearchController extends AbstractController
     public function __construct(Security $security)
     {
         $this->cache = new FilesystemAdapter();
-        $this->cacheDuraction = 5; //Une semaine 604800
+        $this->cacheDuraction = 604800; //Une semaine 604800
         // initialize var username with username if user connected, else : empty string
         ($security->getUser())? $this->username = $security->getUser()->getUsername():$this->username = "";
     }
