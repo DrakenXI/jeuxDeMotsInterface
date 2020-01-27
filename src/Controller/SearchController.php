@@ -44,6 +44,18 @@ class SearchController extends AbstractController
         return true;
     }
 
+
+    private function getCpt(){
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->username]);
+        if($user){
+            // get user preferences.
+            $preferences = $entityManager->getRepository(UserPreferences::class)->findOneBy( ['user_id' => $user]);
+            return $preferences->getCpt();
+        }
+        return 5;
+    }
+
     private function getPage($term){
         $nomCache = 'cache-page-exacte-'.convertToAnsi($term);
         $value = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
@@ -148,6 +160,7 @@ class SearchController extends AbstractController
 
         return $this->render('search/entriesDisplay.html.twig', [
             'entries' => $value,
+            'cpt' => $this->getCpt(),
         ]);
     }
 

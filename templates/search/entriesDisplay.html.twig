@@ -1,8 +1,18 @@
+
 {% for e in entries %}
-    <div class="relation">
+    {% if loop.index <= cpt %}
+    <div id="idxRelation_{{loop_index}}" class="relation">
         <h2 class="roundStuff">{{ e.weight }}</h2>
         <p onclick="searchOnJDM('{{ e.nodeIn }}', 'exacte');">{{ e.nodeIn }}</p> →
         <p onclick="searchOnJDM('{{ e.nodeOut }}', 'exacte');">{{ e.nodeOut }}</p>
     </div>
     <hr>
+    {% else %}
+    <div id="idxRelation_{{loop_index}}" class="relation" style="display:none;">
+        <h2 class="roundStuff">{{ e.weight }}</h2>
+        <p onclick="searchOnJDM('{{ e.nodeIn }}', 'exacte');">{{ e.nodeIn }}</p> →
+        <p onclick="searchOnJDM('{{ e.nodeOut }}', 'exacte');">{{ e.nodeOut }}</p>
+    </div>
+    {% endif %}
 {% endfor %}
+<button onclick="loadMore({{cpt}})" class="button">Voir plus de relations</button>
