@@ -166,7 +166,7 @@ function searchEntriesForTermByRelation(relation,term, iddiv){
     });
 }
 
-function onLoad(relation,term,nbClic){
+/*function loadMore(relation,term,nbClic){
     $.ajax({
         url: '/search-entries-for-term-by-relation/'+relation+'/'+term+(nbClic+1),
         type: 'GET',
@@ -183,7 +183,7 @@ function onLoad(relation,term,nbClic){
             buttonRelationClicked.attr("disabled", true);
         }
     });
-}
+}*/
 
 function getFirstDef(term ,callback){
     $.ajax({

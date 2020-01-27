@@ -58,7 +58,6 @@ class JDMRequest
         $orderedResponse = $response;
         $orderedRelations = array();
         if($isAlphaOrdered){
-
             foreach($orderedResponse->relations as $id => $relation) {
                 $nodesIn = array();
                 $nodesOut = array();
