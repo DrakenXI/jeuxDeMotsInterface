@@ -249,3 +249,13 @@ $(function(){
 termBarre.autocomplete({
     source:lettreTest
 });
+
+termBarre.bind("enterKey",function(e){
+    searchOnJDM();
+});
+termBarre.keyup(function(e){
+    if(e.keyCode == 13)
+    {
+        $(this).trigger("enterKey");
+    }
+});

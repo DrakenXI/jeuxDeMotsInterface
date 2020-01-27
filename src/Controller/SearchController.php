@@ -174,7 +174,10 @@ class SearchController extends AbstractController
         $resultRaffine = $this->cache->get($nomCache, function (ItemInterface $item) use ($term) {
             $item->expiresAfter($this->cacheDuraction);
             $value = $this->getPage($term);
-            return $value->relations["id_".convertToAnsi("raffinement sémantique")];
+            if(isset($value->relations["id_".convertToAnsi("raffinement sémantique")])){
+                return $value->relations["id_".convertToAnsi("raffinement sémantique")];
+            }
+            return null;
         });
         $result = null;
         if(!is_null($resultRaffine)){
